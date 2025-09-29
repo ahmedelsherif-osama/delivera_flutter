@@ -21,7 +21,7 @@ class SplashPage extends StatelessWidget {
           Center(child: SvgPicture.asset('assets/delivera_logo.svg')),
           Padding(
             padding: const EdgeInsets.only(left: 50),
-            child: Text("Together habal!"),
+            child: Text("Your fleet, empowered!"),
           ),
         ],
       ),
