@@ -31,14 +31,21 @@ class AuthRepository {
   }
 
   Future<bool> register(RegisterRequest registerRequest) async {
+    print(registerRequest.toJson());
     try {
       final res = await _dio.post(
         '/Auth/register',
         data: registerRequest.toJson(),
       );
-      return res.statusCode == 200;
-    } catch (e) {
-      throw e;
+      return res.statusCode == 20;
+    } on DioException catch (e) {
+      if (e.response != null) {
+        print(e.response?.data); // will show ValidationProblemDetails JSON
+      }
+      throw (DioException);
+    } catch (er) {
+      print(er);
+      throw (er);
     }
   }
 }

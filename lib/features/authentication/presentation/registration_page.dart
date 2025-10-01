@@ -1,17 +1,21 @@
+import 'package:delivera_flutter/features/authentication/data/auth_repository.dart';
+import 'package:delivera_flutter/features/authentication/logic/auth_provider.dart';
+import 'package:delivera_flutter/features/authentication/logic/register_request.dart';
 import 'package:delivera_flutter/features/authentication/logic/user_model.dart';
 import 'package:delivera_flutter/features/utils/regex_store.dart';
 import 'package:delivera_flutter/features/utils/string_casing_extension.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class RegistrationPage extends StatefulWidget {
+class RegistrationPage extends ConsumerStatefulWidget {
   const RegistrationPage({super.key, required this.onBack});
   final Function onBack;
 
   @override
-  State<RegistrationPage> createState() => _RegistrationPageState();
+  ConsumerState<RegistrationPage> createState() => _RegistrationPageState();
 }
 
-class _RegistrationPageState extends State<RegistrationPage> {
+class _RegistrationPageState extends ConsumerState<RegistrationPage> {
   final _formKey = GlobalKey<FormState>();
 
   DateTime? _dateOfBirth;
@@ -47,10 +51,34 @@ class _RegistrationPageState extends State<RegistrationPage> {
   Future<bool> _register() async {
     if (_formKey.currentState?.validate() ?? false) {
       setState(() => _submitting = true);
-
-      // TODO: Call API or provider here
-
+      try {
+        final result = await ref
+            .read(authRepositoryProvider)
+            .register(
+              RegisterRequest(
+                email: _emailController.text.trim(),
+                username: _usernameController.text.trim(),
+                phoneNumber: _phoneNumberController.text.trim(),
+                firstName: _firstNameController.text.trim(),
+                lastName: _lastNameController.text.trim(),
+                password: _passwordController.text.trim(),
+                nationalId: _nationalIdController.text.trim(),
+                dateOfBirth: _dateOfBirth!,
+                organizationRole: _organizationRole,
+                organizationShortCode: _organizationIdController.text.trim(),
+              ),
+            );
+        if (result) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Registration successful! Please login!")),
+          );
+          widget.onBack.call();
+        }
+      } catch (e) {
+        SnackBar(content: Text("Registration error! $e"));
+      }
       setState(() => _submitting = false);
+
       return true;
     }
     return false;
@@ -233,14 +261,27 @@ class _RegistrationPageState extends State<RegistrationPage> {
                               ),
 
                               // Organization ID
-                              TextFormField(
-                                decoration: _fieldDecoration("Organization ID"),
-                                controller: _organizationIdController,
-                                validator: (value) =>
-                                    value == null || value.isEmpty
-                                    ? "Organization ID is required"
-                                    : null,
-                              ),
+                              _organizationRole != OrganizationRole.owner
+                                  ? TextFormField(
+                                      decoration: _fieldDecoration(
+                                        "Organization ID",
+                                      ),
+                                      controller: _organizationIdController,
+                                      validator: (value) =>
+                                          value == null || value.isEmpty
+                                          ? "Organization ID is required"
+                                          : null,
+                                    )
+                                  : TextFormField(
+                                      decoration: _fieldDecoration(
+                                        "Organization Registration Number is required",
+                                      ),
+                                      controller: _organizationIdController,
+                                      validator: (value) =>
+                                          value == null || value.isEmpty
+                                          ? "Organization ID is required"
+                                          : null,
+                                    ),
                             ]
                             .map(
                               (w) => Padding(

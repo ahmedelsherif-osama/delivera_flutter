@@ -1,3 +1,4 @@
+import 'package:delivera_flutter/features/authentication/logic/user_model.dart';
 import 'package:equatable/equatable.dart';
 
 class RegisterRequest extends Equatable {
@@ -7,10 +8,10 @@ class RegisterRequest extends Equatable {
   final String firstName;
   final String lastName;
   final String password;
-  final String globalRole;
+  final String globalRole = "OrgUser";
   final String nationalId;
-  final String dateOfBirth;
-  final String? organizationRole;
+  final DateTime dateOfBirth;
+  final OrganizationRole? organizationRole;
   final String? organizationShortCode;
 
   const RegisterRequest({
@@ -20,7 +21,6 @@ class RegisterRequest extends Equatable {
     required this.firstName,
     required this.lastName,
     required this.password,
-    required this.globalRole,
     required this.nationalId,
     required this.dateOfBirth,
     this.organizationRole,
@@ -28,17 +28,16 @@ class RegisterRequest extends Equatable {
   });
 
   /// Empty constructor
-  factory RegisterRequest.empty() => const RegisterRequest(
+  factory RegisterRequest.empty() => RegisterRequest(
     email: '',
     username: '',
     phoneNumber: '',
     firstName: '',
     lastName: '',
     password: '',
-    globalRole: '',
     nationalId: '',
-    dateOfBirth: '',
-    organizationRole: '',
+    dateOfBirth: DateTime.now(),
+    organizationRole: OrganizationRole.rider,
     organizationShortCode: '',
   );
 
@@ -51,9 +50,8 @@ class RegisterRequest extends Equatable {
       firstName: json['firstName'] ?? '',
       lastName: json['lastName'] ?? '',
       password: json['password'] ?? '',
-      globalRole: json['globalRole'] ?? '',
       nationalId: json['nationalId'] ?? '',
-      dateOfBirth: json['dateOfBirth'] ?? '',
+      dateOfBirth: json['dateOfBirth'] ?? DateTime.now(),
       organizationRole: json['organizationRole'] ?? '',
       organizationShortCode: json['OrganizationShortCode'] ?? '',
     );
@@ -68,10 +66,9 @@ class RegisterRequest extends Equatable {
       'firstName': firstName,
       'lastName': lastName,
       'password': password,
-      'globalRole': globalRole,
       'nationalId': nationalId,
-      'dateOfBirth': dateOfBirth,
-      'organizationRole': organizationRole,
+      'dateOfBirth': "2005-05-12",
+      'organizationRole': organizationRole!.name,
       'OrganizationShortCode': organizationShortCode,
     };
   }
@@ -84,10 +81,9 @@ class RegisterRequest extends Equatable {
     String? firstName,
     String? lastName,
     String? password,
-    String? globalRole,
     String? nationalId,
-    String? dateOfBirth,
-    String? organizationRole,
+    DateTime? dateOfBirth,
+    OrganizationRole? organizationRole,
     String? organizationShortCode,
   }) {
     return RegisterRequest(
@@ -97,7 +93,6 @@ class RegisterRequest extends Equatable {
       firstName: firstName ?? this.firstName,
       lastName: lastName ?? this.lastName,
       password: password ?? this.password,
-      globalRole: globalRole ?? this.globalRole,
       nationalId: nationalId ?? this.nationalId,
       dateOfBirth: dateOfBirth ?? this.dateOfBirth,
       organizationRole: organizationRole ?? this.organizationRole,

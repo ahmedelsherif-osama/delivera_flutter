@@ -56,4 +56,4 @@ class User extends Equatable {
   List<Object?> get props => [id, username, globalRole, organizationRole];
 }
 
-enum OrganizationRole { rider, support, admin, owner }
+enum OrganizationRole { owner, admin, rider, support }
