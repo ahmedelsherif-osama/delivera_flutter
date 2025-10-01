@@ -1,3 +1,4 @@
+import 'package:delivera_flutter/features/authentication/logic/register_request.dart';
 import 'package:dio/dio.dart';
 
 class AuthRepository {
@@ -22,15 +23,22 @@ class AuthRepository {
   }
 
   Future<Map<String, dynamic>> refresh(String refreshToken) async {
-    final access = "";
-
     final res = await _dio.post(
       '/Auth/refresh',
-      options: Options(headers: {"Authentication": "Bearer $access"}),
       data: {"refresh": refreshToken},
     );
     return res.data;
   }
 
-  // Future<Map<String, dynamic>> register() async {}
+  Future<bool> register(RegisterRequest registerRequest) async {
+    try {
+      final res = await _dio.post(
+        '/Auth/register',
+        data: registerRequest.toJson(),
+      );
+      return res.statusCode == 200;
+    } catch (e) {
+      throw e;
+    }
+  }
 }

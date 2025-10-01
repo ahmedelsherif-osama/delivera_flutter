@@ -1,4 +1,3 @@
-import 'package:delivera_flutter/features/authentication/data/user_storage.dart';
 import 'package:delivera_flutter/features/authentication/logic/user_model.dart';
 import 'package:delivera_flutter/features/authentication/logic/user_provider.dart';
 import 'package:delivera_flutter/features/authentication/services/auth_interceptor.dart';
@@ -7,7 +6,6 @@ import 'package:delivera_flutter/features/authentication/data/token_storage.dart
 import 'package:delivera_flutter/features/authentication/services/token_refresh_service.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 final dioProvider = Provider<Dio>((ref) {
   final d = Dio(

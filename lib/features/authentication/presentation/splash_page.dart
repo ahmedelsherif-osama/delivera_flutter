@@ -1,11 +1,5 @@
-import 'dart:async';
-
-import 'package:delivera_flutter/features/authentication/logic/auth_provider.dart';
-import 'package:delivera_flutter/features/authentication/presentation/home_page.dart';
-import 'package:delivera_flutter/features/authentication/presentation/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class SplashPage extends StatelessWidget {

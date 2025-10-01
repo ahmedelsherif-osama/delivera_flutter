@@ -6,7 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
-  const LoginPage({super.key});
+  const LoginPage({super.key, required this.changeAccountStatus});
+  final Function changeAccountStatus;
 
   @override
   ConsumerState<LoginPage> createState() => _LoginPageState();
@@ -34,88 +35,81 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
 
-    return Expanded(
-      child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 50),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 0, right: 50),
-                child: SvgPicture.asset("assets/delivera_logo.svg"),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 50),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    children: [
-                      TextFormField(
-                        decoration: InputDecoration(labelText: "Username"),
-                        controller: _usernameController,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return "Username is required";
-                          }
-                        },
-                      ),
-                      TextFormField(
-                        decoration: InputDecoration(
-                          labelText: "Password",
-                          suffixIcon: IconButton(
-                            onPressed: () {
-                              setState(() {
-                                _obscureText = !_obscureText; // toggle
-                              });
-                            },
-                            icon: Icon(
-                              _obscureText
-                                  ? Icons.visibility_off
-                                  : Icons.visibility,
-                            ),
-                          ),
-                        ),
-                        obscureText: _obscureText,
-                        controller: _passwordController,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return "Password is required";
-                          }
-                          if (value.length < 8) {
-                            return "Password must be at least 8 characters long";
-                          }
-                          if (!Utils().passwordRegex.hasMatch(value)) {
-                            return "Must contain upper, lower, number, and special char";
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(height: 30),
-                      ElevatedButton(
-                        onPressed: () {
-                          authState.isLoading ? null : _login();
-                        },
-                        child: authState.isLoading
-                            ? Center(child: CircularProgressIndicator())
-                            : Text("Login"),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => RegistrationPage(),
-                            ),
-                          );
-                        },
-                        child: Text("No account yet? Register now!"),
-                      ),
-                    ],
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.only(
+              top: 25,
+              left: 33,
+              right: 33,
+              bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+            ),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  TextFormField(
+                    decoration: InputDecoration(labelText: "Username"),
+                    controller: _usernameController,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Username is required";
+                      }
+                    },
                   ),
-                ),
+                  SizedBox(height: 15),
+                  TextFormField(
+                    decoration: InputDecoration(
+                      labelText: "Password",
+                      suffixIcon: IconButton(
+                        onPressed: () {
+                          setState(() {
+                            _obscureText = !_obscureText; // toggle
+                          });
+                        },
+                        icon: Icon(
+                          _obscureText
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                        ),
+                      ),
+                    ),
+                    obscureText: _obscureText,
+                    controller: _passwordController,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Password is required";
+                      }
+                      if (value.length < 8) {
+                        return "Password must be at least 8 characters long";
+                      }
+                      if (!Utils().passwordRegex.hasMatch(value)) {
+                        return "Must contain upper, lower, number, and special char";
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 70),
+                  ElevatedButton(
+                    onPressed: () {
+                      authState.isLoading ? null : _login();
+                    },
+                    child: authState.isLoading
+                        ? Center(child: CircularProgressIndicator())
+                        : Text("Login"),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      widget.changeAccountStatus.call();
+                    },
+                    child: Text("No account yet? Register now!"),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

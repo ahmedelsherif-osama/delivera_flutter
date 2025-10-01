@@ -1,10 +1,12 @@
 import 'package:delivera_flutter/features/authentication/logic/user_model.dart';
 import 'package:delivera_flutter/features/utils/regex_store.dart';
+import 'package:delivera_flutter/features/utils/string_casing_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
 class RegistrationPage extends StatefulWidget {
-  const RegistrationPage({super.key});
+  const RegistrationPage({super.key, required this.onBack});
+  final Function onBack;
 
   @override
   State<RegistrationPage> createState() => _RegistrationPageState();
@@ -49,18 +51,18 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Expanded(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 50),
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 0, right: 50),
-                  child: SvgPicture.asset("assets/delivera_logo.svg"),
-                ),
-                Padding(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        widget.onBack.call();
+      },
+      child: SizedBox(
+        height: 450,
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 50),
                   child: Form(
                     key: _formKey,
@@ -124,20 +126,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                             }
                           },
                         ),
-                        //                     {
-                        // "email": "rider4@example.com",
-                        // "username": "rider4",
-                        // "phoneNumber": "1234567822",
-                        // "firstName": "Test",
-                        // "lastName": "User",
-                        // "password": "changemE@123",
-                        // "globalRole": "orguser",
-                        // "nationalId": "123456333",
-                        // "dateOfBirth": "2005-05-12",
-                        // "organizationRole":"rider",
-                        // "organizationId":"AD8EA38C-36C2-48E9-B6D8-558EC4D9EE8B"
-                        // }
-                        //
+
                         TextFormField(
                           decoration: InputDecoration(labelText: "First Name"),
                           controller: _firstNameController,
@@ -184,12 +173,13 @@ class _RegistrationPageState extends State<RegistrationPage> {
                           ],
                         ),
                         DropdownButton(
+                          hint: Text("What's your role?"),
                           value: _organizationRole,
                           items: OrganizationRole.values
                               .map(
                                 (role) => DropdownMenuItem(
-                                  child: Text(role.toString().toLowerCase()),
                                   value: role,
+                                  child: Text((role.name).capitalizeFirst()),
                                 ),
                               )
                               .toList(),
@@ -211,22 +201,22 @@ class _RegistrationPageState extends State<RegistrationPage> {
                             }
                           },
                         ),
-                        SizedBox(height: 30),
-                        ElevatedButton(
-                          onPressed: () {
-                            _submitting ? null : _register();
-                          },
-                          child: _submitting
-                              ? Center(child: CircularProgressIndicator())
-                              : Text("Register"),
-                        ),
                       ],
                     ),
                   ),
                 ),
-              ],
+              ),
             ),
-          ),
+            SizedBox(height: 30),
+            ElevatedButton(
+              onPressed: () {
+                _submitting ? null : _register();
+              },
+              child: _submitting
+                  ? Center(child: CircularProgressIndicator())
+                  : Text("Register"),
+            ),
+          ],
         ),
       ),
     );
