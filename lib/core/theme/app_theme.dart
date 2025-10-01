@@ -8,7 +8,7 @@ class AppTheme {
     primaryColor:
         Colors.blue, // historically primary, but overridden by colorScheme
     colorScheme: ColorScheme.light(
-      primary: Colors.blue,
+      primary: Colors.grey[500]!,
       secondary:
           Colors.blueAccent, // same as `secondary` field before Material 3
       surface: Colors.white,
@@ -35,6 +35,24 @@ class AppTheme {
           ),
         ),
         backgroundColor: WidgetStatePropertyAll(Colors.grey[400]!),
+      ),
+    ),
+    textButtonTheme: TextButtonThemeData(
+      style: ButtonStyle(
+        elevation: WidgetStatePropertyAll(10),
+        // shadowColor: WidgetStatePropertyAll(Colors.grey[]),
+        // // shape: WidgetStatePropertyAll<RoundedRectangleBorder>(
+        // //   RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        // // ),
+        foregroundColor: WidgetStatePropertyAll(Colors.grey[800]),
+        textStyle: WidgetStatePropertyAll(
+          TextStyle(
+            shadows: [Shadow(color: Colors.grey[600]!, blurRadius: 2)],
+            color: Colors.grey[800],
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        // backgroundColor: WidgetStatePropertyAll(Colors.grey[400]!),
       ),
     ),
 

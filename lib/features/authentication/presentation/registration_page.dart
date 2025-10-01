@@ -2,7 +2,6 @@ import 'package:delivera_flutter/features/authentication/logic/user_model.dart';
 import 'package:delivera_flutter/features/utils/regex_store.dart';
 import 'package:delivera_flutter/features/utils/string_casing_extension.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 
 class RegistrationPage extends StatefulWidget {
   const RegistrationPage({super.key, required this.onBack});
@@ -14,7 +13,9 @@ class RegistrationPage extends StatefulWidget {
 
 class _RegistrationPageState extends State<RegistrationPage> {
   final _formKey = GlobalKey<FormState>();
+
   DateTime? _dateOfBirth;
+
   final _emailController = TextEditingController();
   final _usernameController = TextEditingController();
   final _phoneNumberController = TextEditingController();
@@ -22,8 +23,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
   final _lastNameController = TextEditingController();
   final _nationalIdController = TextEditingController();
   final _organizationIdController = TextEditingController();
-
   final _passwordController = TextEditingController();
+
   bool _obscureText = true;
   OrganizationRole? _organizationRole;
   bool _submitting = false;
@@ -32,22 +33,31 @@ class _RegistrationPageState extends State<RegistrationPage> {
     final now = DateTime.now();
     final firstDate = DateTime(now.year - 100, now.month, now.day);
     final lastDate = DateTime(now.year - 18, now.month, now.day);
-    DateTime? picked = await showDatePicker(
+    final picked = await showDatePicker(
       context: context,
       initialDate: lastDate,
       firstDate: firstDate,
       lastDate: lastDate,
     );
     if (picked != null) {
-      setState(() {
-        _dateOfBirth = picked;
-      });
+      setState(() => _dateOfBirth = picked);
     }
   }
 
   Future<bool> _register() async {
+    if (_formKey.currentState?.validate() ?? false) {
+      setState(() => _submitting = true);
+
+      // TODO: Call API or provider here
+
+      setState(() => _submitting = false);
+      return true;
+    }
     return false;
   }
+
+  InputDecoration _fieldDecoration(String label) =>
+      InputDecoration(labelText: label);
 
   @override
   Widget build(BuildContext context) {
@@ -62,159 +72,197 @@ class _RegistrationPageState extends State<RegistrationPage> {
           children: [
             Expanded(
               child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 50),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      children: [
-                        TextFormField(
-                          decoration: InputDecoration(labelText: "Email"),
-                          controller: _emailController,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return "Email is required";
-                            }
-                          },
-                        ),
-                        TextFormField(
-                          decoration: InputDecoration(labelText: "Username"),
-                          controller: _usernameController,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return "Username is required";
-                            }
-                          },
-                        ),
-                        TextFormField(
-                          decoration: InputDecoration(
-                            labelText: "Password",
-                            suffixIcon: IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  _obscureText = !_obscureText; // toggle
-                                });
-                              },
-                              icon: Icon(
-                                _obscureText
-                                    ? Icons.visibility_off
-                                    : Icons.visibility,
+                padding: const EdgeInsets.symmetric(horizontal: 50),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children:
+                        [
+                              // Email
+                              TextFormField(
+                                decoration: _fieldDecoration("Email"),
+                                controller: _emailController,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return "Email is required";
+                                  }
+                                  if (!Utils().emailRegex.hasMatch(value)) {
+                                    return "Enter a valid email";
+                                  }
+                                  return null;
+                                },
                               ),
-                            ),
-                          ),
-                          obscureText: _obscureText,
-                          controller: _passwordController,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return "Password is required";
-                            }
-                            if (value.length < 8) {
-                              return "Password must be at least 8 characters long";
-                            }
-                            if (!Utils().passwordRegex.hasMatch(value)) {
-                              return "Must contain upper, lower, number, and special char";
-                            }
-                            return null;
-                          },
-                        ),
-                        TextFormField(
-                          decoration: InputDecoration(labelText: "Phone"),
-                          controller: _phoneNumberController,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return "Phone number is required";
-                            }
-                          },
-                        ),
 
-                        TextFormField(
-                          decoration: InputDecoration(labelText: "First Name"),
-                          controller: _firstNameController,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return "First Name is required";
-                            }
-                          },
-                        ),
-                        TextFormField(
-                          decoration: InputDecoration(labelText: "Last Name"),
-                          controller: _lastNameController,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return "Last Name is required";
-                            }
-                          },
-                        ),
-                        TextFormField(
-                          decoration: InputDecoration(labelText: "National ID"),
-                          controller: _nationalIdController,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return "National ID is required";
-                            }
-                          },
-                        ),
-                        Row(
-                          children: [
-                            Text("Date of birth: "),
-                            TextButton(
-                              onPressed: () {
-                                _selectDate(context);
-                              },
-                              child: Text(
-                                _dateOfBirth == null
-                                    ? "Select date"
-                                    : _dateOfBirth!.toIso8601String().substring(
-                                        0,
-                                        10,
+                              // Username
+                              TextFormField(
+                                decoration: _fieldDecoration("Username"),
+                                controller: _usernameController,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return "Username is required";
+                                  }
+                                  if (value.length < 3) {
+                                    return "Username must be at least 3 characters";
+                                  }
+                                  return null;
+                                },
+                              ),
+
+                              // Password
+                              TextFormField(
+                                decoration: _fieldDecoration("Password")
+                                    .copyWith(
+                                      suffixIcon: IconButton(
+                                        onPressed: () {
+                                          setState(
+                                            () => _obscureText = !_obscureText,
+                                          );
+                                        },
+                                        icon: Icon(
+                                          _obscureText
+                                              ? Icons.visibility_off
+                                              : Icons.visibility,
+                                        ),
                                       ),
+                                    ),
+                                obscureText: _obscureText,
+                                controller: _passwordController,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return "Password is required";
+                                  }
+                                  if (value.length < 8) {
+                                    return "Password must be at least 8 characters";
+                                  }
+                                  if (!Utils().passwordRegex.hasMatch(value)) {
+                                    return "Must contain upper, lower, number, and special char";
+                                  }
+                                  return null;
+                                },
                               ),
-                            ),
-                          ],
-                        ),
-                        DropdownButton(
-                          hint: Text("What's your role?"),
-                          value: _organizationRole,
-                          items: OrganizationRole.values
-                              .map(
-                                (role) => DropdownMenuItem(
-                                  value: role,
-                                  child: Text((role.name).capitalizeFirst()),
-                                ),
-                              )
-                              .toList(),
 
-                          onChanged: (value) {
-                            setState(() {
-                              _organizationRole = value;
-                            });
-                          },
-                        ),
-                        TextFormField(
-                          decoration: InputDecoration(
-                            labelText: "Organization ID",
-                          ),
-                          controller: _organizationIdController,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return "Organization ID is required";
-                            }
-                          },
-                        ),
-                      ],
-                    ),
+                              // Phone
+                              TextFormField(
+                                decoration: _fieldDecoration("Phone"),
+                                controller: _phoneNumberController,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return "Phone number is required";
+                                  }
+                                  if (!Utils().internationalPhoneRegex.hasMatch(
+                                    value,
+                                  )) {
+                                    return "Enter a valid phone number";
+                                  }
+                                  return null;
+                                },
+                              ),
+
+                              // First Name
+                              TextFormField(
+                                decoration: _fieldDecoration("First Name"),
+                                controller: _firstNameController,
+                                validator: (value) =>
+                                    value == null || value.isEmpty
+                                    ? "First Name is required"
+                                    : null,
+                              ),
+
+                              // Last Name
+                              TextFormField(
+                                decoration: _fieldDecoration("Last Name"),
+                                controller: _lastNameController,
+                                validator: (value) =>
+                                    value == null || value.isEmpty
+                                    ? "Last Name is required"
+                                    : null,
+                              ),
+
+                              // National ID
+                              TextFormField(
+                                decoration: _fieldDecoration("National ID"),
+                                controller: _nationalIdController,
+                                validator: (value) =>
+                                    value == null || value.isEmpty
+                                    ? "National ID is required"
+                                    : null,
+                              ),
+
+                              // Date of Birth (styled like a textfield)
+                              GestureDetector(
+                                onTap: () => _selectDate(context),
+                                child: AbsorbPointer(
+                                  child: TextFormField(
+                                    decoration: _fieldDecoration(
+                                      "Date of Birth",
+                                    ),
+                                    controller: TextEditingController(
+                                      text: _dateOfBirth == null
+                                          ? ""
+                                          : _dateOfBirth!
+                                                .toIso8601String()
+                                                .substring(0, 10),
+                                    ),
+                                    validator: (_) => _dateOfBirth == null
+                                        ? "Date of Birth is required"
+                                        : null,
+                                  ),
+                                ),
+                              ),
+
+                              // Organization Role (dropdown styled like textfield)
+                              DropdownButtonFormField<OrganizationRole>(
+                                decoration: _fieldDecoration("Role"),
+                                value: _organizationRole,
+                                items: OrganizationRole.values
+                                    .map(
+                                      (role) => DropdownMenuItem(
+                                        value: role,
+                                        child: Text(
+                                          role.name.capitalizeFirst(),
+                                        ),
+                                      ),
+                                    )
+                                    .toList(),
+                                onChanged: (value) {
+                                  setState(() => _organizationRole = value);
+                                },
+                                validator: (value) => value == null
+                                    ? "Please select your role"
+                                    : null,
+                              ),
+
+                              // Organization ID
+                              TextFormField(
+                                decoration: _fieldDecoration("Organization ID"),
+                                controller: _organizationIdController,
+                                validator: (value) =>
+                                    value == null || value.isEmpty
+                                    ? "Organization ID is required"
+                                    : null,
+                              ),
+                            ]
+                            .map(
+                              (w) => Padding(
+                                padding: const EdgeInsets.only(bottom: 16),
+                                child: w,
+                              ),
+                            )
+                            .toList(),
                   ),
                 ),
               ),
             ),
-            SizedBox(height: 30),
+            const SizedBox(height: 30),
             ElevatedButton(
-              onPressed: () {
-                _submitting ? null : _register();
-              },
+              onPressed: _submitting ? null : _register,
               child: _submitting
-                  ? Center(child: CircularProgressIndicator())
-                  : Text("Register"),
+                  ? const SizedBox(
+                      height: 24,
+                      width: 24,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Text("Register"),
             ),
           ],
         ),
