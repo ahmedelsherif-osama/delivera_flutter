@@ -9,19 +9,7 @@ class SuperadminHome extends StatefulWidget {
 }
 
 class _SuperadminHomeState extends State<SuperadminHome> {
-  Widget _currentPage = Container();
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    _currentPage = AdminOptionsPage(
-      onSelectOption: (page) {
-        setState(() {
-          _currentPage = page;
-        });
-      },
-    );
-  }
+  Widget? _currentPage;
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +30,23 @@ class _SuperadminHomeState extends State<SuperadminHome> {
               padding: const EdgeInsets.only(left: 0, bottom: 25),
               child: Text("Your fleet, empowered!"),
             ),
-            Column(children: [_currentPage]),
+            Column(
+              children: [
+                _currentPage ??
+                    AdminOptionsPage(
+                      onBack: () {
+                        setState(() {
+                          _currentPage = null;
+                        });
+                      },
+                      onSelectOption: (page) {
+                        setState(() {
+                          _currentPage = page;
+                        });
+                      },
+                    ),
+              ],
+            ),
           ],
         ),
       ),
@@ -51,8 +55,13 @@ class _SuperadminHomeState extends State<SuperadminHome> {
 }
 
 class AdminOptionsPage extends StatelessWidget {
-  const AdminOptionsPage({super.key, required this.onSelectOption});
+  const AdminOptionsPage({
+    super.key,
+    required this.onSelectOption,
+    required this.onBack,
+  });
   final Function(Widget page) onSelectOption;
+  final Function onBack;
 
   @override
   Widget build(BuildContext context) {
@@ -60,13 +69,13 @@ class AdminOptionsPage extends StatelessWidget {
       children: [
         GestureDetector(
           onTap: () {
-            onSelectOption.call(OrganizationsPage());
+            onSelectOption.call(OrganizationsPage(onBack: onBack));
           },
           child: Container(child: Text("Organizations")),
         ),
         GestureDetector(
           onTap: () {
-            onSelectOption.call(UsersPage());
+            onSelectOption.call(UsersPage(onBack: onBack));
           },
           child: Container(child: Text("Users")),
         ),
@@ -76,19 +85,33 @@ class AdminOptionsPage extends StatelessWidget {
 }
 
 class OrganizationsPage extends StatelessWidget {
-  const OrganizationsPage({super.key});
+  const OrganizationsPage({super.key, required this.onBack});
+  final Function onBack;
 
   @override
   Widget build(Object context) {
-    return Center(child: Text("Organizations Page"));
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        onBack.call();
+      },
+      child: Center(child: Text("Organizations Page")),
+    );
   }
 }
 
 class UsersPage extends StatelessWidget {
-  const UsersPage({super.key});
+  const UsersPage({super.key, required this.onBack});
+  final Function onBack;
 
   @override
   Widget build(Object context) {
-    return Center(child: Text("Users Page"));
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        onBack.call();
+      },
+      child: Center(child: Text("Users Page")),
+    );
   }
 }
