@@ -1,16 +1,21 @@
+import 'package:delivera_flutter/features/admin_actions/logic/organization_model.dart';
 import 'package:delivera_flutter/features/authentication/logic/register_request.dart';
 import 'package:dio/dio.dart';
 
-class AuthRepository {
-  const AuthRepository(this._dio);
+class AdminActionsRepository {
+  const AdminActionsRepository(this._dio);
   final Dio _dio;
 
-  Future<Map<String, dynamic>> login(String username, String password) async {
-    final res = await _dio.post(
-      '/Auth/login',
-      data: {"username": username, "password": password},
-    );
-    return res.data;
+  Future<List<Organization>> fetchOrganizations(
+    String username,
+    String password,
+  ) async {
+    final res = await _dio.get('/api/adminactions/organizations/');
+
+    final organizations = (res.data as List)
+        .map((jsonOrg) => Organization.fromJson(jsonOrg))
+        .toList();
+    return organizations;
   }
 
   Future<Map<String, dynamic>> logout(String refreshToken) async {
@@ -30,21 +35,22 @@ class AuthRepository {
     return res.data;
   }
 
-  Future<dynamic> register(RegisterRequest registerRequest) async {
+  Future<bool> register(RegisterRequest registerRequest) async {
     print(registerRequest.toJson());
     try {
       final res = await _dio.post(
         '/Auth/register',
         data: registerRequest.toJson(),
       );
-      return res.statusCode == 201;
+      return res.statusCode == 20;
     } on DioException catch (e) {
       if (e.response != null) {
         print(e.response?.data); // will show ValidationProblemDetails JSON
       }
-      return e.response!.data.toString();
+      throw (DioException);
     } catch (er) {
-      return er;
+      print(er);
+      throw (er);
     }
   }
 }

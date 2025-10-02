@@ -13,6 +13,7 @@ class RegisterRequest extends Equatable {
   final DateTime dateOfBirth;
   final OrganizationRole? organizationRole;
   final String? organizationShortCode;
+  final String? organizationRegistrationNumber;
 
   const RegisterRequest({
     required this.email,
@@ -25,6 +26,7 @@ class RegisterRequest extends Equatable {
     required this.dateOfBirth,
     this.organizationRole,
     this.organizationShortCode,
+    this.organizationRegistrationNumber,
   });
 
   /// Empty constructor
@@ -39,6 +41,7 @@ class RegisterRequest extends Equatable {
     dateOfBirth: DateTime.now(),
     organizationRole: OrganizationRole.rider,
     organizationShortCode: '',
+    organizationRegistrationNumber: '',
   );
 
   /// From JSON
@@ -53,7 +56,8 @@ class RegisterRequest extends Equatable {
       nationalId: json['nationalId'] ?? '',
       dateOfBirth: json['dateOfBirth'] ?? DateTime.now(),
       organizationRole: json['organizationRole'] ?? '',
-      organizationShortCode: json['OrganizationShortCode'] ?? '',
+      organizationShortCode: json['organizationShortCode'] ?? '',
+      organizationRegistrationNumber: json['registrationNumber'],
     );
   }
 
@@ -69,7 +73,8 @@ class RegisterRequest extends Equatable {
       'nationalId': nationalId,
       'dateOfBirth': "2005-05-12",
       'organizationRole': organizationRole!.name,
-      'OrganizationShortCode': organizationShortCode,
+      'organizationShortCode': organizationShortCode ?? "",
+      "registrationNumber": organizationRegistrationNumber ?? "",
     };
   }
 
@@ -85,6 +90,7 @@ class RegisterRequest extends Equatable {
     DateTime? dateOfBirth,
     OrganizationRole? organizationRole,
     String? organizationShortCode,
+    String? organizationRegistrationNumber,
   }) {
     return RegisterRequest(
       email: email ?? this.email,
@@ -98,6 +104,8 @@ class RegisterRequest extends Equatable {
       organizationRole: organizationRole ?? this.organizationRole,
       organizationShortCode:
           organizationShortCode ?? this.organizationShortCode,
+      organizationRegistrationNumber:
+          organizationRegistrationNumber ?? organizationRegistrationNumber,
     );
   }
 
@@ -114,5 +122,6 @@ class RegisterRequest extends Equatable {
     dateOfBirth,
     organizationRole,
     organizationShortCode,
+    organizationRegistrationNumber,
   ];
 }
