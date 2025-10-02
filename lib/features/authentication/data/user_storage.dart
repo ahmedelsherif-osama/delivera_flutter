@@ -7,16 +7,20 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 class UserStorage {
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
   Future<void> saveUser(User user) async {
-    await _storage.write(key: 'user', value: user.toJson().toString());
+    print("storage saving user $user");
+    await _storage.write(key: 'user', value: jsonEncode(user.toJson()));
   }
 
   Future<User?> getUser() async {
+    print("inside get user");
     final raw = await _storage.read(key: 'user');
+    print("so storage $raw");
     if (raw == null) return null;
-    return User.fromJson(Map<String, dynamic>.from(jsonDecode(raw)));
+    return User.fromJson(jsonDecode(raw));
   }
 
   Future<void> clear() async {
+    print("storage clearing user");
     await _storage.delete(key: 'user');
   }
 }

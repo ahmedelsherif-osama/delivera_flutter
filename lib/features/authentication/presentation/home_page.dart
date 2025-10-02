@@ -1,3 +1,4 @@
+import 'package:delivera_flutter/features/admin_actions/presentation/superadmin_home.dart';
 import 'package:delivera_flutter/features/authentication/logic/auth_provider.dart';
 import 'package:delivera_flutter/features/authentication/logic/user_model.dart';
 import 'package:delivera_flutter/features/authentication/logic/user_provider.dart';
@@ -54,7 +55,7 @@ class UserHome extends StatelessWidget {
   Widget build(BuildContext context) {
     switch (user.globalRole) {
       case "SuperAdmin":
-        return Center(child: Text("Superadmin home"));
+        return SuperadminHome();
       case "OrgUser":
         switch (user.organizationRole) {
           case "Rider":

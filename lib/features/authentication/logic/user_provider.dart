@@ -14,16 +14,20 @@ class UserNotifier extends Notifier<User?> {
   }
 
   Future<void> _init() async {
+    print("inside init user provider");
     final user = await _storage.getUser();
+    print("user provider init user $user");
     state = user;
   }
 
   Future<void> setUser(User user) async {
+    print("user provider setting user $user");
     await _storage.saveUser(user);
     state = user;
   }
 
   Future<void> clearUser() async {
+    print("user provider clearing user");
     await _storage.clear();
     state = null;
   }

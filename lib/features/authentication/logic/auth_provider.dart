@@ -68,6 +68,7 @@ class AuthNotifier extends Notifier<AsyncValue<bool>> {
         (res['ExpiresIn'] ?? res['expiresIn'] ?? 0) as int,
       );
       final user = User.fromJson(res);
+      print("user fetched on login $user");
       await ref.read(userProvider.notifier).setUser(user);
 
       state = const AsyncValue.data(true);
