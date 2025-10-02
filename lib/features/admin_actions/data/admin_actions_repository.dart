@@ -1,21 +1,25 @@
 import 'package:delivera_flutter/features/admin_actions/logic/organization_model.dart';
+import 'package:delivera_flutter/features/authentication/logic/auth_provider.dart';
 import 'package:delivera_flutter/features/authentication/logic/register_request.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AdminActionsRepository {
   const AdminActionsRepository(this._dio);
   final Dio _dio;
 
-  Future<List<Organization>> fetchOrganizations(
-    String username,
-    String password,
-  ) async {
-    final res = await _dio.get('/api/adminactions/organizations/');
+  Future<dynamic> fetchOrganizations() async {
+    final res = await _dio.get('/adminactions/organizations/');
 
-    final organizations = (res.data as List)
-        .map((jsonOrg) => Organization.fromJson(jsonOrg))
-        .toList();
-    return organizations;
+    try {
+      final organizations = (res.data as List)
+          .map((jsonOrg) => Organization.fromJson(jsonOrg))
+          .toList();
+      return organizations;
+    } on DioException catch (e) {
+      print(e.response!.data);
+      return e.response!.data;
+    }
   }
 
   Future<Map<String, dynamic>> logout(String refreshToken) async {
@@ -54,3 +58,8 @@ class AdminActionsRepository {
     }
   }
 }
+
+final adminActionsRepoProvider = Provider((ref) {
+  final dio = ref.read(dioProvider);
+  return AdminActionsRepository(dio);
+});

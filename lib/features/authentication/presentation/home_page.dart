@@ -34,14 +34,14 @@ class _HomePageState extends ConsumerState<HomePage> {
     }
 
     return Padding(
-      padding: const EdgeInsets.all(100),
+      padding: const EdgeInsets.all(10),
       child: Column(
         children: [
           UserHome(user: user),
-          ElevatedButton(onPressed: _logout, child: Text("Logout")),
-          _loggingout
-              ? Center(child: CircularProgressIndicator())
-              : Container(),
+          // ElevatedButton(onPressed: _logout, child: Text("Logout")),
+          // _loggingout
+          //     ? Center(child: CircularProgressIndicator())
+          //     : Container(),
         ],
       ),
     );
