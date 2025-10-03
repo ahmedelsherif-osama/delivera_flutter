@@ -57,6 +57,42 @@ class AdminActionsRepository {
       throw (er);
     }
   }
+
+  Future<dynamic> approveOrg(String organizationId) async {
+    print("approve " + organizationId);
+    try {
+      final res = await _dio.patch(
+        '/adminactions/superadmin/approveOrg/$organizationId',
+      );
+      return res.statusCode == 200;
+    } on DioException catch (e) {
+      if (e.response != null) {
+        print(e.response?.data); // will show ValidationProblemDetails JSON
+      }
+      return e.response?.data;
+    } catch (er) {
+      print(er);
+      return er;
+    }
+  }
+
+  Future<dynamic> revokeOrg(String organizationId) async {
+    print("revoke " + organizationId);
+    try {
+      final res = await _dio.patch(
+        '/adminactions/superadmin/revokeOrg/$organizationId',
+      );
+      return res.statusCode == 200;
+    } on DioException catch (e) {
+      if (e.response != null) {
+        print(e.response?.data); // will show ValidationProblemDetails JSON
+      }
+      return e.response?.data;
+    } catch (er) {
+      print(er);
+      return er;
+    }
+  }
 }
 
 final adminActionsRepoProvider = Provider((ref) {

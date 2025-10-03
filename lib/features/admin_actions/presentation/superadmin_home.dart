@@ -1,5 +1,6 @@
 import 'package:delivera_flutter/features/admin_actions/data/admin_actions_repository.dart';
 import 'package:delivera_flutter/features/admin_actions/logic/organization_model.dart';
+import 'package:delivera_flutter/features/admin_actions/presentation/organizations_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
@@ -80,95 +81,6 @@ class AdminOptionsPage extends StatelessWidget {
           child: Container(child: Text("Users")),
         ),
       ],
-    );
-  }
-}
-
-class OrganizationsPage extends ConsumerStatefulWidget {
-  const OrganizationsPage({super.key, required this.onBack});
-  final Function onBack;
-
-  @override
-  ConsumerState<OrganizationsPage> createState() => _OrganizationsPageState();
-}
-
-class _OrganizationsPageState extends ConsumerState<OrganizationsPage> {
-  List<Organization> _organizations = [];
-  bool _fetchingOrganizations = true;
-  String _error = "";
-
-  _fetchOrganizations() async {
-    final result = await ref
-        .read(adminActionsRepoProvider)
-        .fetchOrganizations();
-
-    if (result is List<Organization>) {
-      setState(() {
-        _organizations = result;
-      });
-    } else {
-      setState(() {
-        _error = result;
-      });
-    }
-    setState(() {
-      _fetchingOrganizations = false;
-    });
-  }
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    _fetchOrganizations();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final height = MediaQuery.of(context).size.height;
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (didPop, result) {
-        widget.onBack.call();
-      },
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            Center(child: Text("Organizations")),
-            SizedBox(height: 30),
-            if (_fetchingOrganizations) ...[
-              Center(child: CircularProgressIndicator()),
-            ] else if (_error != "") ...[
-              Center(child: Text(_error)),
-            ] else ...[
-              SizedBox(
-                height: 298,
-                child: DataTable(
-                  columns: const [
-                    DataColumn(label: Text("Name")),
-                    DataColumn(label: Text("Approved")),
-                  ],
-                  rows: _organizations
-                      .map(
-                        (org) => DataRow(
-                          cells: [
-                            DataCell(Text(org.name)),
-                            DataCell(
-                              Switch.adaptive(
-                                value: org.isApproved,
-                                onChanged: (value) {},
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                      .toList(),
-                ),
-              ),
-            ],
-          ],
-        ),
-      ),
     );
   }
 }
