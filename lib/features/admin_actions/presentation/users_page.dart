@@ -1,30 +1,29 @@
 import 'package:delivera_flutter/features/admin_actions/data/admin_actions_repository.dart';
 import 'package:delivera_flutter/features/admin_actions/logic/organization_model.dart';
+import 'package:delivera_flutter/features/authentication/logic/user_model.dart';
 import 'package:delivera_flutter/features/utils/string_casing_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class OrganizationsPage extends ConsumerStatefulWidget {
-  const OrganizationsPage({super.key, required this.onBack});
+class UsersPage extends ConsumerStatefulWidget {
+  const UsersPage({super.key, required this.onBack});
   final Function onBack;
 
   @override
-  ConsumerState<OrganizationsPage> createState() => _OrganizationsPageState();
+  ConsumerState<UsersPage> createState() => _UsersPageState();
 }
 
-class _OrganizationsPageState extends ConsumerState<OrganizationsPage> {
-  List<Organization> _organizations = [];
-  bool _fetchingOrganizations = true;
+class _UsersPageState extends ConsumerState<UsersPage> {
+  List<User> _users = [];
+  bool _fetchingUsers = true;
   String _error = "";
 
-  _fetchOrganizations() async {
-    final result = await ref
-        .read(adminActionsRepoProvider)
-        .fetchOrganizations();
+  _fetchUsers() async {
+    final result = await ref.read(adminActionsRepoProvider).fetchUsers();
 
-    if (result is List<Organization>) {
+    if (result is List<User>) {
       setState(() {
-        _organizations = result;
+        _users = result;
       });
     } else {
       setState(() {
@@ -32,7 +31,7 @@ class _OrganizationsPageState extends ConsumerState<OrganizationsPage> {
       });
     }
     setState(() {
-      _fetchingOrganizations = false;
+      _fetchingUsers = false;
     });
   }
 
@@ -40,7 +39,7 @@ class _OrganizationsPageState extends ConsumerState<OrganizationsPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _fetchOrganizations();
+    _fetchUsers();
   }
 
   @override
@@ -56,36 +55,36 @@ class _OrganizationsPageState extends ConsumerState<OrganizationsPage> {
           children: [
             Center(
               child: Text(
-                "Organizations",
+                "Users",
                 style: Theme.of(context).textTheme.titleLarge,
               ),
             ),
             SizedBox(height: 10),
-            if (_fetchingOrganizations) ...[
+            if (_fetchingUsers) ...[
               Center(child: CircularProgressIndicator()),
             ] else if (_error != "") ...[
               Center(child: Text(_error)),
             ] else ...[
               SizedBox(
-                height: 518,
+                height: 526,
                 child: SingleChildScrollView(
                   child: DataTable(
-                    columnSpacing: 10,
+                    columnSpacing: 30,
                     columns: const [
-                      DataColumn(label: Text("Registration#")),
+                      DataColumn(label: Text("ID")),
                       DataColumn(label: Text("Name")),
                       DataColumn(label: Text("Approved")),
                     ],
-                    rows: _organizations
+                    rows: _users
                         .map(
-                          (org) => DataRow(
+                          (user) => DataRow(
                             cells: [
-                              DataCell(Text(org.registrationNumber)),
-                              DataCell(Text(org.name)),
+                              DataCell(Text(user.id.substring(0, 8))),
+                              DataCell(Text(user.username)),
                               DataCell(
                                 CustomSwitch(
-                                  isApproved: org.isApproved,
-                                  organizationId: org.id,
+                                  isApproved: user.isSuperAdminApproved!,
+                                  userId: user.id,
                                 ),
                               ),
                             ],
@@ -107,10 +106,10 @@ class CustomSwitch extends ConsumerStatefulWidget {
   const CustomSwitch({
     super.key,
     required this.isApproved,
-    required this.organizationId,
+    required this.userId,
   });
   final bool isApproved;
-  final String organizationId;
+  final String userId;
 
   @override
   ConsumerState<CustomSwitch> createState() => _CustomSwitchState();
@@ -121,27 +120,26 @@ class _CustomSwitchState extends ConsumerState<CustomSwitch> {
   bool _isLoading = true;
   @override
   void initState() {
+    // TODO: implement initState
     super.initState();
     _isApproved = widget.isApproved;
     _isLoading = false;
   }
 
-  _updateApproval(String organizationId) async {
+  _updateApproval(String userId) async {
     print("inside update approval");
 
     final result = _isApproved!
         ? await ref
               .read(adminActionsRepoProvider)
-              .approveOrg(organizationId.toUpperCase())
+              .approveUserBySuperAdmin(userId.toUpperCase())
         : await ref
               .read(adminActionsRepoProvider)
-              .revokeOrg(organizationId.toUpperCase());
+              .revokeUserBySuperAdmin(userId.toUpperCase());
     if (result == true) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            "Organization ${_isApproved! ? "approved" : "revoked"}!",
-          ),
+          content: Text("User ${_isApproved! ? "approved" : "revoked"}!"),
         ),
       );
     } else {
@@ -156,9 +154,6 @@ class _CustomSwitchState extends ConsumerState<CustomSwitch> {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    print("Primary: ${scheme.primary}");
-    print("OnSurface: ${scheme.onSurface}");
     if (_isLoading) {
       return Container();
     }
@@ -168,7 +163,7 @@ class _CustomSwitchState extends ConsumerState<CustomSwitch> {
         setState(() {
           _isApproved = value;
         });
-        _updateApproval(widget.organizationId);
+        _updateApproval(widget.userId);
       },
     );
   }

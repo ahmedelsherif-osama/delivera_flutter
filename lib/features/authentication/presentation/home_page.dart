@@ -13,17 +13,17 @@ class HomePage extends ConsumerStatefulWidget {
 }
 
 class _HomePageState extends ConsumerState<HomePage> {
-  bool _loggingout = false;
+  // bool _loggingout = false;
+
+  // _logout() async {
+  //   print("inside logout");
+  //   await ref.read(authProvider.notifier).logout();
+  //   print("logged out success");
+  // }
   @override
   initState() {
     super.initState();
     // Listen to auth changes
-  }
-
-  _logout() async {
-    print("inside logout");
-    await ref.read(authProvider.notifier).logout();
-    print("logged out success");
   }
 
   @override

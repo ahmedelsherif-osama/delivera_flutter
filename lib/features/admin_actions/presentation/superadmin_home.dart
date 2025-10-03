@@ -1,6 +1,8 @@
 import 'package:delivera_flutter/features/admin_actions/data/admin_actions_repository.dart';
 import 'package:delivera_flutter/features/admin_actions/logic/organization_model.dart';
 import 'package:delivera_flutter/features/admin_actions/presentation/organizations_page.dart';
+import 'package:delivera_flutter/features/admin_actions/presentation/users_page.dart';
+import 'package:delivera_flutter/features/authentication/logic/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
@@ -55,7 +57,7 @@ class _SuperadminHomeState extends State<SuperadminHome> {
   }
 }
 
-class AdminOptionsPage extends StatelessWidget {
+class AdminOptionsPage extends ConsumerStatefulWidget {
   const AdminOptionsPage({
     super.key,
     required this.onSelectOption,
@@ -65,38 +67,66 @@ class AdminOptionsPage extends StatelessWidget {
   final Function onBack;
 
   @override
+  ConsumerState<AdminOptionsPage> createState() => _AdminOptionsPageState();
+}
+
+class _AdminOptionsPageState extends ConsumerState<AdminOptionsPage> {
+  bool _loggingout = false;
+
+  _logout() async {
+    print("inside logout");
+    await ref.read(authProvider.notifier).logout();
+    print("logged out success");
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        GestureDetector(
-          onTap: () {
-            onSelectOption.call(OrganizationsPage(onBack: onBack));
-          },
-          child: Container(child: Text("Organizations")),
+        Padding(
+          padding: const EdgeInsets.only(left: 10),
+          child: Text(
+            "Your fleet, empowered!",
+            style: Theme.of(context).textTheme.labelLarge,
+          ),
         ),
-        GestureDetector(
-          onTap: () {
-            onSelectOption.call(UsersPage(onBack: onBack));
-          },
-          child: Container(child: Text("Users")),
+        SizedBox(height: 90),
+        SingleChildScrollView(
+          child: Column(
+            children: [
+              GestureDetector(
+                onTap: () {
+                  widget.onSelectOption.call(
+                    OrganizationsPage(onBack: widget.onBack),
+                  );
+                },
+                child: Container(
+                  child: Text(
+                    "Organizations",
+                    style: Theme.of(context).textTheme.headlineMedium,
+                  ),
+                ),
+              ),
+              SizedBox(height: 60),
+
+              GestureDetector(
+                onTap: () {
+                  widget.onSelectOption.call(UsersPage(onBack: widget.onBack));
+                },
+                child: Container(
+                  child: Text(
+                    "Users",
+                    style: Theme.of(context).textTheme.headlineMedium,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
+        SizedBox(height: 60),
+        ElevatedButton(onPressed: _logout, child: Text("Logout")),
+        _loggingout ? Center(child: CircularProgressIndicator()) : Container(),
       ],
-    );
-  }
-}
-
-class UsersPage extends StatelessWidget {
-  const UsersPage({super.key, required this.onBack});
-  final Function onBack;
-
-  @override
-  Widget build(Object context) {
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (didPop, result) {
-        onBack.call();
-      },
-      child: Center(child: Text("Users Page")),
     );
   }
 }

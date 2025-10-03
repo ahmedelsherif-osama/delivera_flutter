@@ -30,6 +30,7 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
   final _organizationIdController = TextEditingController();
   final _passwordController = TextEditingController();
   final _organizationRegistrationNumberController = TextEditingController();
+  final _organizationNameController = TextEditingController();
 
   bool _obscureText = true;
   OrganizationRole? _organizationRole;
@@ -70,6 +71,7 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
               organizationShortCode: _organizationIdController.text.trim(),
               organizationRegistrationNumber:
                   _organizationRegistrationNumberController.text.trim(),
+              organizationName: _organizationNameController.text.trim(),
             ),
           );
       if (result == true) {
@@ -266,24 +268,39 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
                               _organizationRole != OrganizationRole.owner
                                   ? TextFormField(
                                       decoration: _fieldDecoration(
-                                        "Organization ID",
+                                        "Organization Short Code",
                                       ),
                                       controller: _organizationIdController,
                                       validator: (value) =>
                                           value == null || value.isEmpty
-                                          ? "Organization ID is required"
+                                          ? "Organization Short Code is required"
                                           : null,
                                     )
-                                  : TextFormField(
-                                      decoration: _fieldDecoration(
-                                        "Organization Registration Number is required",
-                                      ),
-                                      controller:
-                                          _organizationRegistrationNumberController,
-                                      validator: (value) =>
-                                          value == null || value.isEmpty
-                                          ? "Organization Registration No. is required"
-                                          : null,
+                                  : Column(
+                                      children: [
+                                        TextFormField(
+                                          decoration: _fieldDecoration(
+                                            "Organization Registration Number is required",
+                                          ),
+                                          controller:
+                                              _organizationRegistrationNumberController,
+                                          validator: (value) =>
+                                              value == null || value.isEmpty
+                                              ? "Organization Registration No. is required"
+                                              : null,
+                                        ),
+                                        TextFormField(
+                                          decoration: _fieldDecoration(
+                                            "Organization Name is required",
+                                          ),
+                                          controller:
+                                              _organizationNameController,
+                                          validator: (value) =>
+                                              value == null || value.isEmpty
+                                              ? "Organization Name is required"
+                                              : null,
+                                        ),
+                                      ],
                                     ),
                             ]
                             .map(

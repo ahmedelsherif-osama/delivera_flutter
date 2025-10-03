@@ -14,6 +14,7 @@ class RegisterRequest extends Equatable {
   final OrganizationRole? organizationRole;
   final String? organizationShortCode;
   final String? organizationRegistrationNumber;
+  final String? organizationName;
 
   const RegisterRequest({
     required this.email,
@@ -27,6 +28,7 @@ class RegisterRequest extends Equatable {
     this.organizationRole,
     this.organizationShortCode,
     this.organizationRegistrationNumber,
+    this.organizationName,
   });
 
   /// Empty constructor
@@ -42,6 +44,7 @@ class RegisterRequest extends Equatable {
     organizationRole: OrganizationRole.rider,
     organizationShortCode: '',
     organizationRegistrationNumber: '',
+    organizationName: '',
   );
 
   /// From JSON
@@ -57,7 +60,8 @@ class RegisterRequest extends Equatable {
       dateOfBirth: json['dateOfBirth'] ?? DateTime.now(),
       organizationRole: json['organizationRole'] ?? '',
       organizationShortCode: json['organizationShortCode'] ?? '',
-      organizationRegistrationNumber: json['registrationNumber'],
+      organizationRegistrationNumber: json['registrationNumber'] ?? "",
+      organizationName: json['organizationName'] ?? "",
     );
   }
 
@@ -75,6 +79,7 @@ class RegisterRequest extends Equatable {
       'organizationRole': organizationRole!.name,
       'organizationShortCode': organizationShortCode ?? "",
       "registrationNumber": organizationRegistrationNumber ?? "",
+      "organizationName": organizationName ?? "",
     };
   }
 
@@ -106,6 +111,7 @@ class RegisterRequest extends Equatable {
           organizationShortCode ?? this.organizationShortCode,
       organizationRegistrationNumber:
           organizationRegistrationNumber ?? organizationRegistrationNumber,
+      organizationName: organizationName ?? organizationName,
     );
   }
 
@@ -123,5 +129,6 @@ class RegisterRequest extends Equatable {
     organizationRole,
     organizationShortCode,
     organizationRegistrationNumber,
+    organizationName,
   ];
 }
