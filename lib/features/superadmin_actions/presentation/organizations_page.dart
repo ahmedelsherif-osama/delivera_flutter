@@ -1,5 +1,5 @@
-import 'package:delivera_flutter/features/admin_actions/data/admin_actions_repository.dart';
-import 'package:delivera_flutter/features/admin_actions/logic/organization_model.dart';
+import 'package:delivera_flutter/features/superadmin_actions/data/admin_actions_repository.dart';
+import 'package:delivera_flutter/features/superadmin_actions/logic/organization_model.dart';
 import 'package:delivera_flutter/features/utils/string_casing_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

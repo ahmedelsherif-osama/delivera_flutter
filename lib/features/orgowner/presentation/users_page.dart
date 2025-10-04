@@ -1,7 +1,5 @@
-import 'package:delivera_flutter/features/superadmin_actions/data/admin_actions_repository.dart';
-import 'package:delivera_flutter/features/superadmin_actions/logic/organization_model.dart';
 import 'package:delivera_flutter/features/authentication/logic/user_model.dart';
-import 'package:delivera_flutter/features/utils/string_casing_extension.dart';
+import 'package:delivera_flutter/features/orgowner/data/orgowner_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -19,7 +17,7 @@ class _UsersPageState extends ConsumerState<UsersPage> {
   String _error = "";
 
   _fetchUsers() async {
-    final result = await ref.read(adminActionsRepoProvider).fetchUsers();
+    final result = await ref.read(orgOwnerRepoProvider).fetchUsers();
 
     if (result is List<User>) {
       setState(() {
@@ -33,6 +31,8 @@ class _UsersPageState extends ConsumerState<UsersPage> {
     setState(() {
       _fetchingUsers = false;
     });
+    final test = (result as List).map((e) => print((e as User).toJson()));
+    print("fetched org users in UI $test");
   }
 
   @override
@@ -44,6 +44,7 @@ class _UsersPageState extends ConsumerState<UsersPage> {
 
   @override
   Widget build(BuildContext context) {
+    print("org users page");
     final height = MediaQuery.of(context).size.height;
     return PopScope(
       canPop: false,
@@ -83,7 +84,7 @@ class _UsersPageState extends ConsumerState<UsersPage> {
                               DataCell(Text(user.username)),
                               DataCell(
                                 CustomSwitch(
-                                  isApproved: user.isSuperAdminApproved!,
+                                  isApproved: user.isOrgOwnerApproved!,
                                   userId: user.id,
                                 ),
                               ),
@@ -131,11 +132,11 @@ class _CustomSwitchState extends ConsumerState<CustomSwitch> {
 
     final result = _isApproved!
         ? await ref
-              .read(adminActionsRepoProvider)
-              .approveUserBySuperAdmin(userId.toUpperCase())
+              .read(orgOwnerRepoProvider)
+              .approveUserByOrgOwner(userId.toUpperCase())
         : await ref
-              .read(adminActionsRepoProvider)
-              .revokeUserBySuperAdmin(userId.toUpperCase());
+              .read(orgOwnerRepoProvider)
+              .revokeUserByOrgOwner(userId.toUpperCase());
     if (result == true) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

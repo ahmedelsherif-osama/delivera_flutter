@@ -1,6 +1,4 @@
-import 'package:delivera_flutter/features/superadmin_actions/logic/organization_model.dart';
 import 'package:delivera_flutter/features/authentication/logic/auth_provider.dart';
-import 'package:delivera_flutter/features/authentication/logic/register_request.dart';
 import 'package:delivera_flutter/features/authentication/logic/user_model.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,7 +8,7 @@ class OrgOwnerRepository {
   final Dio _dio;
 
   Future<dynamic> fetchUsers() async {
-    final res = await _dio.get('/adminactions/users/');
+    final res = await _dio.get('/adminactions/orgowner/users/');
 
     try {
       final users = (res.data as List)
@@ -23,16 +21,16 @@ class OrgOwnerRepository {
     }
   }
 
-  Future<dynamic> approveUserBySuperAdmin(String userId) async {
+  Future<dynamic> approveUserByOrgOwner(String userId) async {
     print("approve " + userId);
     try {
       final res = await _dio.patch(
-        '/adminactions/superadmin/approveUser/$userId',
+        '/adminactions/orgowner/approveuser/$userId',
       );
       return res.statusCode == 200;
     } on DioException catch (e) {
       if (e.response != null) {
-        print(e.response?.data); // will show ValidationProblemDetails JSON
+        print(e.response?.data);
       }
       return e.response?.data;
     } catch (er) {
@@ -41,34 +39,14 @@ class OrgOwnerRepository {
     }
   }
 
-  Future<dynamic> revokeUserBySuperAdmin(String userId) async {
+  Future<dynamic> revokeUserByOrgOwner(String userId) async {
     print("revoke " + userId);
     try {
-      final res = await _dio.patch(
-        '/adminactions/superadmin/revokeuser/$userId',
-      );
+      final res = await _dio.patch('/adminactions/orgowner/revokeuser/$userId');
       return res.statusCode == 200;
     } on DioException catch (e) {
       if (e.response != null) {
-        print(e.response?.data); // will show ValidationProblemDetails JSON
-      }
-      return e.response?.data;
-    } catch (er) {
-      print(er);
-      return er;
-    }
-  }
-
-  Future<dynamic> revokeOrg(String organizationId) async {
-    print("revoke " + organizationId);
-    try {
-      final res = await _dio.patch(
-        '/adminactions/superadmin/revokeOrg/$organizationId',
-      );
-      return res.statusCode == 200;
-    } on DioException catch (e) {
-      if (e.response != null) {
-        print(e.response?.data); // will show ValidationProblemDetails JSON
+        print(e.response?.data);
       }
       return e.response?.data;
     } catch (er) {
@@ -78,7 +56,7 @@ class OrgOwnerRepository {
   }
 }
 
-final adminActionsRepoProvider = Provider((ref) {
+final orgOwnerRepoProvider = Provider((ref) {
   final dio = ref.read(dioProvider);
   return OrgOwnerRepository(dio);
 });

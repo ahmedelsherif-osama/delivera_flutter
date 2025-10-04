@@ -1,4 +1,4 @@
-import 'package:delivera_flutter/features/admin_actions/logic/organization_model.dart';
+import 'package:delivera_flutter/features/superadmin_actions/logic/organization_model.dart';
 import 'package:delivera_flutter/features/authentication/logic/auth_provider.dart';
 import 'package:delivera_flutter/features/authentication/logic/register_request.dart';
 import 'package:delivera_flutter/features/authentication/logic/user_model.dart';
@@ -24,7 +24,7 @@ class AdminActionsRepository {
   }
 
   Future<dynamic> fetchUsers() async {
-    final res = await _dio.get('/adminactions/users/');
+    final res = await _dio.get('/adminactions/orgowner/users/');
 
     try {
       final users = (res.data as List)

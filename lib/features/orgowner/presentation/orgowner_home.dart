@@ -1,24 +1,23 @@
-import 'package:delivera_flutter/features/superadmin_actions/data/admin_actions_repository.dart';
-import 'package:delivera_flutter/features/superadmin_actions/logic/organization_model.dart';
-import 'package:delivera_flutter/features/superadmin_actions/presentation/organizations_page.dart';
-import 'package:delivera_flutter/features/superadmin_actions/presentation/users_page.dart';
+import 'package:delivera_flutter/features/orgowner/presentation/users_page.dart';
+
 import 'package:delivera_flutter/features/authentication/logic/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 
-class SuperadminHome extends StatefulWidget {
-  const SuperadminHome({super.key});
+class OrgownerHome extends StatefulWidget {
+  const OrgownerHome({super.key});
 
   @override
-  State<SuperadminHome> createState() => _SuperadminHomeState();
+  State<OrgownerHome> createState() => _OrgownerHomeState();
 }
 
-class _SuperadminHomeState extends State<SuperadminHome> {
+class _OrgownerHomeState extends State<OrgownerHome> {
   Widget? _currentPage;
 
   @override
   Widget build(BuildContext context) {
+    print("within orgowner home");
     return SafeArea(
       child: SingleChildScrollView(
         child: Column(
@@ -36,7 +35,7 @@ class _SuperadminHomeState extends State<SuperadminHome> {
             Column(
               children: [
                 _currentPage ??
-                    AdminOptionsPage(
+                    OrgownerOptionsPage(
                       onBack: () {
                         setState(() {
                           _currentPage = null;
@@ -57,8 +56,8 @@ class _SuperadminHomeState extends State<SuperadminHome> {
   }
 }
 
-class AdminOptionsPage extends ConsumerStatefulWidget {
-  const AdminOptionsPage({
+class OrgownerOptionsPage extends ConsumerStatefulWidget {
+  const OrgownerOptionsPage({
     super.key,
     required this.onSelectOption,
     required this.onBack,
@@ -67,10 +66,11 @@ class AdminOptionsPage extends ConsumerStatefulWidget {
   final Function onBack;
 
   @override
-  ConsumerState<AdminOptionsPage> createState() => _AdminOptionsPageState();
+  ConsumerState<OrgownerOptionsPage> createState() =>
+      _OrgownerOptionsPageState();
 }
 
-class _AdminOptionsPageState extends ConsumerState<AdminOptionsPage> {
+class _OrgownerOptionsPageState extends ConsumerState<OrgownerOptionsPage> {
   bool _loggingout = false;
 
   _logout() async {
@@ -94,21 +94,6 @@ class _AdminOptionsPageState extends ConsumerState<AdminOptionsPage> {
         SingleChildScrollView(
           child: Column(
             children: [
-              GestureDetector(
-                onTap: () {
-                  widget.onSelectOption.call(
-                    OrganizationsPage(onBack: widget.onBack),
-                  );
-                },
-                child: Container(
-                  child: Text(
-                    "Organizations",
-                    style: Theme.of(context).textTheme.headlineMedium,
-                  ),
-                ),
-              ),
-              SizedBox(height: 60),
-
               GestureDetector(
                 onTap: () {
                   widget.onSelectOption.call(UsersPage(onBack: widget.onBack));

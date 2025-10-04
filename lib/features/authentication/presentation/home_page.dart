@@ -1,4 +1,5 @@
-import 'package:delivera_flutter/features/admin_actions/presentation/superadmin_home.dart';
+import 'package:delivera_flutter/features/orgowner/presentation/orgowner_home.dart';
+import 'package:delivera_flutter/features/superadmin_actions/presentation/superadmin_home.dart';
 import 'package:delivera_flutter/features/authentication/logic/auth_provider.dart';
 import 'package:delivera_flutter/features/authentication/logic/user_model.dart';
 import 'package:delivera_flutter/features/authentication/logic/user_provider.dart';
@@ -35,15 +36,7 @@ class _HomePageState extends ConsumerState<HomePage> {
 
     return Padding(
       padding: const EdgeInsets.all(10),
-      child: Column(
-        children: [
-          UserHome(user: user),
-          // ElevatedButton(onPressed: _logout, child: Text("Logout")),
-          // _loggingout
-          //     ? Center(child: CircularProgressIndicator())
-          //     : Container(),
-        ],
-      ),
+      child: Column(children: [UserHome(user: user)]),
     );
   }
 }
@@ -65,7 +58,7 @@ class UserHome extends StatelessWidget {
           case "Admin":
             return Center(child: Text("Org admin home"));
           case "Owner":
-            return Center(child: Text("Org owner home"));
+            return OrgownerHome();
           default:
             return Center(child: Text("Error"));
         }
