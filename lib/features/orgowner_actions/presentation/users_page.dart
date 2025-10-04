@@ -1,5 +1,5 @@
 import 'package:delivera_flutter/features/authentication/logic/user_model.dart';
-import 'package:delivera_flutter/features/orgowner/data/orgowner_repository.dart';
+import 'package:delivera_flutter/features/orgowner_actions/data/orgowner_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
