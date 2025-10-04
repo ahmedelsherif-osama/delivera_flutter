@@ -24,7 +24,7 @@ class AdminActionsRepository {
   }
 
   Future<dynamic> fetchUsers() async {
-    final res = await _dio.get('/adminactions/orgowner/users/');
+    final res = await _dio.get('/adminactions/superadmin/users/');
 
     try {
       final users = (res.data as List)

@@ -8,8 +8,8 @@ class OrgadminRepository {
   final Dio _dio;
 
   createZone() async {}
-  getZone(String zoneId) async {}
-  getAllZones() async {}
+  fetchZone(String zoneId) async {}
+  fetchZones() async {}
 }
 
 final orgAdminRepoProvider = Provider((ref) {
