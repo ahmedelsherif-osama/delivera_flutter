@@ -1,5 +1,3 @@
-import 'package:delivera_flutter/features/superadmin_actions/data/admin_actions_repository.dart';
-import 'package:delivera_flutter/features/superadmin_actions/logic/organization_model.dart';
 import 'package:delivera_flutter/features/superadmin_actions/presentation/organizations_page.dart';
 import 'package:delivera_flutter/features/superadmin_actions/presentation/users_page.dart';
 import 'package:delivera_flutter/features/authentication/logic/auth_provider.dart';
@@ -102,7 +100,7 @@ class _AdminOptionsPageState extends ConsumerState<AdminOptionsPage> {
                 },
                 child: Container(
                   child: Text(
-                    "Organizations",
+                    "Zones",
                     style: Theme.of(context).textTheme.headlineMedium,
                   ),
                 ),
