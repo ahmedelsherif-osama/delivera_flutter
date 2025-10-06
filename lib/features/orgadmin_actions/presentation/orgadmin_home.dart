@@ -1,3 +1,4 @@
+import 'package:delivera_flutter/features/orgadmin_actions/presentation/zones_page.dart';
 import 'package:delivera_flutter/features/superadmin_actions/presentation/organizations_page.dart';
 import 'package:delivera_flutter/features/superadmin_actions/presentation/users_page.dart';
 import 'package:delivera_flutter/features/authentication/logic/auth_provider.dart';
@@ -94,9 +95,7 @@ class _AdminOptionsPageState extends ConsumerState<AdminOptionsPage> {
             children: [
               GestureDetector(
                 onTap: () {
-                  widget.onSelectOption.call(
-                    OrganizationsPage(onBack: widget.onBack),
-                  );
+                  widget.onSelectOption.call(ZonesPage(onBack: widget.onBack));
                 },
                 child: Container(
                   child: Text(
@@ -113,7 +112,7 @@ class _AdminOptionsPageState extends ConsumerState<AdminOptionsPage> {
                 },
                 child: Container(
                   child: Text(
-                    "Users",
+                    "Orders",
                     style: Theme.of(context).textTheme.headlineMedium,
                   ),
                 ),

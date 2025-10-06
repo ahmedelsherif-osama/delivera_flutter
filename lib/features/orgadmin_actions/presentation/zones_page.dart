@@ -1,8 +1,9 @@
-import 'package:delivera_flutter/features/superadmin_actions/data/admin_actions_repository.dart';
-import 'package:delivera_flutter/features/superadmin_actions/logic/organization_model.dart';
-import 'package:delivera_flutter/features/utils/string_casing_extension.dart';
+import 'package:delivera_flutter/features/orgadmin_actions/data/orgadmin_repository.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../logic/zone_model.dart';
 
 class ZonesPage extends ConsumerStatefulWidget {
   const ZonesPage({super.key, required this.onBack});
@@ -13,18 +14,18 @@ class ZonesPage extends ConsumerStatefulWidget {
 }
 
 class _ZonesPageState extends ConsumerState<ZonesPage> {
-  List<Organization> _organizations = [];
-  bool _fetchingOrganizations = true;
+  List<Zone> _zones = [];
+  bool _fetchingZones = true;
   String _error = "";
+  bool _viewSingleZone = false;
+  Zone? _selectedZone;
 
-  _fetchOrganizations() async {
-    final result = await ref
-        .read(adminActionsRepoProvider)
-        .fetchOrganizations();
+  _fetchZones() async {
+    final result = await ref.read(orgAdminRepoProvider).fetchZones();
 
-    if (result is List<Organization>) {
+    if (result is List<Zone>) {
       setState(() {
-        _organizations = result;
+        _zones = result;
       });
     } else {
       setState(() {
@@ -32,7 +33,7 @@ class _ZonesPageState extends ConsumerState<ZonesPage> {
       });
     }
     setState(() {
-      _fetchingOrganizations = false;
+      _fetchingZones = false;
     });
   }
 
@@ -40,7 +41,7 @@ class _ZonesPageState extends ConsumerState<ZonesPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _fetchOrganizations();
+    _fetchZones();
   }
 
   @override
@@ -49,52 +50,77 @@ class _ZonesPageState extends ConsumerState<ZonesPage> {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
-        widget.onBack.call();
+        if (_viewSingleZone) {
+          setState(() {
+            _viewSingleZone = false;
+          });
+        } else {
+          widget.onBack.call();
+        }
       },
       child: SingleChildScrollView(
         child: Column(
           children: [
             Center(
               child: Text(
-                "Organizations",
+                "Zones",
                 style: Theme.of(context).textTheme.titleLarge,
               ),
             ),
             SizedBox(height: 10),
-            if (_fetchingOrganizations) ...[
-              Center(child: CircularProgressIndicator()),
-            ] else if (_error != "") ...[
-              Center(child: Text(_error)),
+            if (_viewSingleZone) ...[
+              ViewZonePage(zone: _selectedZone!),
             ] else ...[
-              SizedBox(
-                height: 518,
-                child: SingleChildScrollView(
-                  child: DataTable(
-                    columnSpacing: 10,
-                    columns: const [
-                      DataColumn(label: Text("Registration#")),
-                      DataColumn(label: Text("Name")),
-                      DataColumn(label: Text("Approved")),
-                    ],
-                    rows: _organizations
-                        .map(
-                          (org) => DataRow(
-                            cells: [
-                              DataCell(Text(org.registrationNumber)),
-                              DataCell(Text(org.name)),
-                              DataCell(
-                                CustomSwitch(
-                                  isApproved: org.isApproved,
-                                  organizationId: org.id,
+              if (_fetchingZones) ...[
+                Center(child: CircularProgressIndicator()),
+              ] else if (_error != "") ...[
+                Center(child: Text(_error)),
+              ] else ...[
+                SizedBox(
+                  height: 518,
+                  child: SingleChildScrollView(
+                    child: DataTable(
+                      columnSpacing: 30,
+                      columns: const [
+                        DataColumn(label: Text("ID")),
+                        DataColumn(label: Text("Name")),
+                      ],
+                      rows: _zones
+                          .map(
+                            (zone) => DataRow(
+                              cells: [
+                                DataCell(
+                                  GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        _selectedZone = zone;
+                                        _viewSingleZone = true;
+                                      });
+                                    },
+                                    child: Container(
+                                      child: Text(zone.id.substring(0, 8)),
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        )
-                        .toList(),
+                                DataCell(
+                                  GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        _selectedZone = zone;
+                                        _viewSingleZone = true;
+                                      });
+                                    },
+                                    child: Container(child: Text(zone.name)),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                          .toList(),
+                    ),
                   ),
                 ),
-              ),
+              ],
             ],
           ],
         ),
@@ -103,73 +129,17 @@ class _ZonesPageState extends ConsumerState<ZonesPage> {
   }
 }
 
-class CustomSwitch extends ConsumerStatefulWidget {
-  const CustomSwitch({
-    super.key,
-    required this.isApproved,
-    required this.organizationId,
-  });
-  final bool isApproved;
-  final String organizationId;
+class ViewZonePage extends StatefulWidget {
+  const ViewZonePage({super.key, required this.zone});
+  final Zone zone;
 
   @override
-  ConsumerState<CustomSwitch> createState() => _CustomSwitchState();
+  State<ViewZonePage> createState() => _ViewZonePageState();
 }
 
-class _CustomSwitchState extends ConsumerState<CustomSwitch> {
-  bool? _isApproved;
-  bool _isLoading = true;
-  @override
-  void initState() {
-    super.initState();
-    _isApproved = widget.isApproved;
-    _isLoading = false;
-  }
-
-  _updateApproval(String organizationId) async {
-    print("inside update approval");
-
-    final result = _isApproved!
-        ? await ref
-              .read(adminActionsRepoProvider)
-              .approveOrg(organizationId.toUpperCase())
-        : await ref
-              .read(adminActionsRepoProvider)
-              .revokeOrg(organizationId.toUpperCase());
-    if (result == true) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            "Organization ${_isApproved! ? "approved" : "revoked"}!",
-          ),
-        ),
-      );
-    } else {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Error: $result")));
-      setState(() {
-        _isApproved = widget.isApproved;
-      });
-    }
-  }
-
+class _ViewZonePageState extends State<ViewZonePage> {
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    print("Primary: ${scheme.primary}");
-    print("OnSurface: ${scheme.onSurface}");
-    if (_isLoading) {
-      return Container();
-    }
-    return Switch.adaptive(
-      value: _isApproved!,
-      onChanged: (value) {
-        setState(() {
-          _isApproved = value;
-        });
-        _updateApproval(widget.organizationId);
-      },
-    );
+    return Center(child: Text("View Single Zone"));
   }
 }
