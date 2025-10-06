@@ -19,7 +19,17 @@ class OrgadminRepository {
     }
   }
 
-  fetchZone(String zoneId) async {}
+  deleteZone(String zoneId) async {
+    try {
+      final res = await _dio.delete("/zones/delete/$zoneId");
+      if (res.statusCode == 200) return true;
+    } on DioException catch (e) {
+      return e;
+    } catch (e) {
+      return e;
+    }
+  }
+
   Future<dynamic> fetchZones() async {
     try {
       final res = await _dio.get("/zones/");

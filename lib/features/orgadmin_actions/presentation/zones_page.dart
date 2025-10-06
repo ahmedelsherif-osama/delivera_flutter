@@ -37,6 +37,21 @@ class _ZonesPageState extends ConsumerState<ZonesPage> {
     });
   }
 
+  _deleteZone(String zoneId) async {
+    final result = await ref.read(orgAdminRepoProvider).deleteZone(zoneId);
+
+    if (result) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Zone deleted!")));
+      await _fetchZones();
+    } else {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Error: $result")));
+    }
+  }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -79,6 +94,7 @@ class _ZonesPageState extends ConsumerState<ZonesPage> {
                         columns: const [
                           DataColumn(label: Text("ID")),
                           DataColumn(label: Text("Name")),
+                          DataColumn(label: Text("Actions")),
                         ],
                         rows: _zones
                             .map(
@@ -120,6 +136,80 @@ class _ZonesPageState extends ConsumerState<ZonesPage> {
                                       child: Container(child: Text(zone.name)),
                                     ),
                                   ),
+                                  DataCell(
+                                    Container(
+                                      child: IconButton(
+                                        onPressed: () {
+                                          showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              return Dialog(
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(16),
+                                                ),
+                                                child: Padding(
+                                                  padding: const EdgeInsets.all(
+                                                    24.0,
+                                                  ),
+                                                  child: Column(
+                                                    mainAxisSize: MainAxisSize
+                                                        .min, // prevents full screen height
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      Text(
+                                                        "Are you sure you want to delete this zone?",
+                                                        style: Theme.of(
+                                                          context,
+                                                        ).textTheme.titleMedium,
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                      ),
+                                                      const SizedBox(
+                                                        height: 24,
+                                                      ),
+                                                      Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceEvenly,
+                                                        children: [
+                                                          ElevatedButton(
+                                                            onPressed: () {
+                                                              Navigator.of(
+                                                                context,
+                                                              ).pop(); // close dialog first
+                                                              _deleteZone(
+                                                                zone.id,
+                                                              );
+                                                            },
+                                                            child: const Text(
+                                                              "Yes",
+                                                            ),
+                                                          ),
+                                                          ElevatedButton(
+                                                            onPressed: () =>
+                                                                Navigator.of(
+                                                                  context,
+                                                                ).pop(),
+                                                            child: const Text(
+                                                              "No",
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              );
+                                            },
+                                          );
+                                        },
+                                        icon: Icon(Icons.close),
+                                      ),
+                                    ),
+                                  ),
                                 ],
                               ),
                             )
@@ -140,7 +230,8 @@ class _ZonesPageState extends ConsumerState<ZonesPage> {
                   builder: (context) => CreateZonePage(
                     onSuccess: (zone) {
                       setState(() {
-                        _zones.add(zone);
+                        // _zones.add(zone);
+                        _fetchZones();
                       });
                     },
                   ),
