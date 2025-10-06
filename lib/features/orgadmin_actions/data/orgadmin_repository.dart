@@ -8,7 +8,17 @@ class OrgadminRepository {
   const OrgadminRepository(this._dio);
   final Dio _dio;
 
-  createZone() async {}
+  createZone(Zone zone) async {
+    try {
+      final res = await _dio.post("/zones/create/", data: zone.toJson());
+      return Zone.fromJson(res.data);
+    } on DioException catch (e) {
+      return e.error ?? e.message;
+    } catch (e) {
+      return e;
+    }
+  }
+
   fetchZone(String zoneId) async {}
   Future<dynamic> fetchZones() async {
     try {

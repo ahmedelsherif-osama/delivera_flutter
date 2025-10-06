@@ -20,11 +20,13 @@ class Zone extends Equatable {
   }
 
   /// Convert to JSON
-  Map<String, dynamic> toJson() => {
-    'id': id,
-    'name': name,
-    'wktPolygon': wktPolygon,
-  };
+  Map<String, dynamic> toJson() => {'name': name, 'wktPolygon': wktPolygon};
+
+  //   Map<String, dynamic> toJson() => {
+  //   'id': id,
+  //   'name': name,
+  //   'wktPolygon': "POLYGON (($wktPolygon))",
+  // };
 
   /// Copy with new values
   Zone copyWith({String? id, String? name, String? wktPolygon}) {
