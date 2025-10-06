@@ -1,5 +1,5 @@
 import 'package:delivera_flutter/features/authentication/logic/auth_provider.dart';
-import 'package:delivera_flutter/features/authentication/logic/user_model.dart';
+import 'package:delivera_flutter/features/orgadmin_actions/logic/order_model.dart';
 import 'package:delivera_flutter/features/orgadmin_actions/logic/zone_model.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,7 +15,7 @@ class OrgadminRepository {
     } on DioException catch (e) {
       return e.error ?? e.message;
     } catch (e) {
-      return e;
+      return e.toString();
     }
   }
 
@@ -24,9 +24,9 @@ class OrgadminRepository {
       final res = await _dio.delete("/zones/delete/$zoneId");
       if (res.statusCode == 200) return true;
     } on DioException catch (e) {
-      return e;
+      return e.error ?? e.message;
     } catch (e) {
-      return e;
+      return e.toString();
     }
   }
 
@@ -42,9 +42,27 @@ class OrgadminRepository {
     } on DioException catch (e) {
       return e.error ?? e.message;
     } catch (e) {
-      return e;
+      return e.toString();
     }
   }
+
+  fetchOrders() async {
+    try {
+      final res = await _dio.get("/orders/orgorders");
+      print(res);
+      final orders = (res.data as List)
+          .map((orderJson) => Order.fromJson(orderJson))
+          .toList();
+      print("orders $orders");
+      return orders;
+    } on DioException catch (e) {
+      return e.error ?? e.message;
+    } catch (e) {
+      return e.toString();
+    }
+  }
+
+  createOrder(Order order) async {}
 }
 
 final orgAdminRepoProvider = Provider((ref) {
