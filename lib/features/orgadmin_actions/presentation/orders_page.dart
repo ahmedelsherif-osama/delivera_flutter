@@ -1,8 +1,7 @@
 import 'package:delivera_flutter/features/orgadmin_actions/data/orgadmin_repository.dart';
 import 'package:delivera_flutter/features/orgadmin_actions/logic/order_model.dart';
-import 'package:delivera_flutter/features/superadmin_actions/data/admin_actions_repository.dart';
-import 'package:delivera_flutter/features/superadmin_actions/logic/organization_model.dart';
-import 'package:delivera_flutter/features/utils/string_casing_extension.dart';
+import 'package:delivera_flutter/features/orgadmin_actions/presentation/create_order.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -15,10 +14,64 @@ class OrdersPage extends ConsumerStatefulWidget {
 }
 
 class _OrdersPageState extends ConsumerState<OrdersPage> {
+  Widget? _selectedChild;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedChild = _buildViewOrders();
+  }
+
+  void _onBack() {
+    setState(() {
+      _selectedChild = _buildViewOrders();
+    });
+  }
+
+  void _onCreateOrder() {
+    setState(() {
+      _selectedChild = CreateOrder(onBack: _onBack);
+    });
+  }
+
+  Widget _buildViewOrders() {
+    return ViewOrders(onBack: widget.onBack, onCreateOrder: _onCreateOrder);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (_selectedChild == ViewOrder()) {
+          widget.onBack.call();
+        } else {
+          _onBack();
+        }
+      },
+      child: _selectedChild == null
+          ? Center(child: CircularProgressIndicator())
+          : _selectedChild!,
+    );
+  }
+}
+
+class ViewOrders extends ConsumerStatefulWidget {
+  const ViewOrders({
+    super.key,
+    required this.onBack,
+    required this.onCreateOrder,
+  });
+  final Function onBack;
+  final Function onCreateOrder;
+  @override
+  ConsumerState<ViewOrders> createState() => _ViewOrdersState();
+}
+
+class _ViewOrdersState extends ConsumerState<ViewOrders> {
   List<Order> _orders = [];
   bool _fetchingOrders = true;
   String _error = "";
-
   _fetchOrders() async {
     final result = await ref.read(orgAdminRepoProvider).fetchOrders();
 
@@ -98,23 +151,21 @@ class _OrdersPageState extends ConsumerState<OrdersPage> {
 
           ElevatedButton(
             onPressed: () {
-              // Navigator.of(context).push(
-              //   MaterialPageRoute(
-              //     builder: (context) => CreateZonePage(
-              //       onSuccess: (zone) {
-              //         setState(() {
-              //           // _zones.add(zone);
-              //           _fetchZones();
-              //         });
-              //       },
-              //     ),
-              //   ),
-              // );
+              widget.onCreateOrder.call();
             },
             child: Text("Create Order"),
           ),
         ],
       ),
     );
+  }
+}
+
+class ViewOrder extends StatelessWidget {
+  const ViewOrder({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(child: Container(child: Text("View Order")));
   }
 }
