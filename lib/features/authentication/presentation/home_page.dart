@@ -45,8 +45,10 @@ class _HomePageState extends ConsumerState<HomePage> {
 class UserHome extends StatelessWidget {
   const UserHome({super.key, required this.user});
   final User user;
+
   @override
   Widget build(BuildContext context) {
+    print("we are home and $user");
     switch (user.globalRole) {
       case "SuperAdmin":
         return SuperadminHome();

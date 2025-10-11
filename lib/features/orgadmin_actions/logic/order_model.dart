@@ -63,17 +63,12 @@ class Order {
 
   /// Serialize
   Map<String, dynamic> toJson() => {
-    'id': id,
     'organizationId': organizationId,
-    'riderId': riderId,
-    'status': status.name,
     'pickUpLocation': pickUpLocation.toJson(),
     'dropOffLocation': dropOffLocation.toJson(),
     'createdAt': createdAt.toIso8601String(),
     'updatedAt': updatedAt.toIso8601String(),
     'orderDetails': orderDetails,
-    'riderSessionId': riderSessionId,
-    'createdById': createdById,
   };
 
   /// CopyWith

@@ -1,13 +1,14 @@
 import 'package:delivera_flutter/features/authentication/logic/auth_provider.dart';
+import 'package:delivera_flutter/features/authentication/logic/user_provider.dart';
 import 'package:delivera_flutter/features/orgadmin_actions/logic/order_model.dart';
 import 'package:delivera_flutter/features/orgadmin_actions/logic/zone_model.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class OrgadminRepository {
-  const OrgadminRepository(this._dio);
+  const OrgadminRepository(this._dio, this._ref);
   final Dio _dio;
-
+  final Ref _ref;
   createZone(Zone zone) async {
     try {
       final res = await _dio.post("/zones/create/", data: zone.toJson());
@@ -62,10 +63,29 @@ class OrgadminRepository {
     }
   }
 
-  createOrder(Order order) async {}
+  createOrder(Order order) async {
+    try {
+      final user = _ref.read(userProvider);
+      print(user);
+      final orderToSend = order.copyWith(organizationId: user!.organizationId);
+      print(orderToSend.toJson());
+
+      final res = await _dio.post(
+        '/orders/createorder/',
+        data: orderToSend.toJson(),
+      );
+      return res.statusCode == 201;
+    } on DioException catch (e) {
+      print(e.toString());
+      return e.toString();
+    } catch (e) {
+      print(e.toString());
+      return e.toString();
+    }
+  }
 }
 
 final orgAdminRepoProvider = Provider((ref) {
   final dio = ref.read(dioProvider);
-  return OrgadminRepository(dio);
+  return OrgadminRepository(dio, ref);
 });

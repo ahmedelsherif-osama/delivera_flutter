@@ -67,7 +67,8 @@ class AuthNotifier extends Notifier<AsyncValue<bool>> {
         res['RefreshToken'] ?? res['refreshToken'] ?? '',
         (res['ExpiresIn'] ?? res['expiresIn'] ?? 0) as int,
       );
-      final user = User.fromJson(res);
+      print(res);
+      final user = User.fromJson(res["user"]);
       print("user fetched on login $user");
       await ref.read(userProvider.notifier).setUser(user);
 
