@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:delivera_flutter/features/authentication/logic/auth_provider.dart';
 import 'package:delivera_flutter/features/authentication/logic/user_provider.dart';
 import 'package:delivera_flutter/features/orgadmin_actions/logic/order_model.dart';
@@ -80,6 +82,48 @@ class OrgadminRepository {
       return e.toString();
     } catch (e) {
       print(e.toString());
+      return e.toString();
+    }
+  }
+
+  Future<dynamic> autoAssignOrder(String orderId) async {
+    try {
+      final res = await _dio.patch(
+        '/ridersessions/assignrider/?orderId=${orderId.toUpperCase()}',
+      );
+      return res.statusCode == 200;
+    } on DioException catch (e) {
+      return e.response!.data["message"];
+    } catch (e) {
+      return e.toString();
+    }
+  }
+
+  Future<dynamic> completeOrder(String orderId) async {
+    try {
+      print("inside complete repo");
+      final res = await _dio.patch(
+        '/orders/updateorderstatus/',
+        data: {"status": "Delivered", "orderId": orderId},
+      );
+      return res.statusCode == 200;
+    } on DioException catch (e) {
+      return e.toString();
+    } catch (e) {
+      return e.toString();
+    }
+  }
+
+  Future<dynamic> cancelOrder(String orderId) async {
+    try {
+      final res = await _dio.patch(
+        '/orders/updateorderstatus/',
+        data: {"status": "Canceled", "orderId": orderId},
+      );
+      return res.statusCode == 200;
+    } on DioException catch (e) {
+      return e.response!.data["message"];
+    } catch (e) {
       return e.toString();
     }
   }

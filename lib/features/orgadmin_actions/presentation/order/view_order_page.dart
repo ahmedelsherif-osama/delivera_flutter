@@ -1,13 +1,69 @@
+import 'package:delivera_flutter/features/orgadmin_actions/data/orgadmin_repository.dart';
 import 'package:delivera_flutter/features/orgadmin_actions/logic/order_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-class ViewOrderPage extends StatelessWidget {
+class ViewOrderPage extends ConsumerStatefulWidget {
   const ViewOrderPage({super.key, required this.order});
   final Order order;
 
+  @override
+  ConsumerState<ViewOrderPage> createState() => _ViewOrderPageState();
+}
+
+class _ViewOrderPageState extends ConsumerState<ViewOrderPage> {
   String formatDate(DateTime date) {
     return DateFormat('yyyy-MM-dd • hh:mm a').format(date);
+  }
+
+  _autoDispatch() async {
+    final result = await ref
+        .read(orgAdminRepoProvider)
+        .autoAssignOrder(widget.order.id);
+
+    if (result == true) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Order dispatched successfully!")));
+    } else {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(result)));
+    }
+  }
+
+  _complete() async {
+    print("ui complete");
+    final result = await ref
+        .read(orgAdminRepoProvider)
+        .completeOrder(widget.order.id);
+
+    if (result == true) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Order completed successfully!")));
+    } else {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(result)));
+    }
+  }
+
+  _cancel() async {
+    final result = await ref
+        .read(orgAdminRepoProvider)
+        .cancelOrder(widget.order.id);
+
+    if (result == true) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Order canceled successfully!")));
+    } else {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(result)));
+    }
   }
 
   @override
@@ -42,7 +98,7 @@ class ViewOrderPage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Order ID: ${order.id.substring(0, 8)}',
+                      'Order ID: ${widget.order.id.substring(0, 8)}',
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: colorScheme.onSurface,
@@ -50,13 +106,16 @@ class ViewOrderPage extends StatelessWidget {
                     ),
                     Chip(
                       label: Text(
-                        order.status.name.toUpperCase(),
+                        widget.order.status.name.toUpperCase(),
                         style: TextStyle(
                           color: colorScheme.onPrimary,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      backgroundColor: _statusColor(order.status, colorScheme),
+                      backgroundColor: _statusColor(
+                        widget.order.status,
+                        colorScheme,
+                      ),
                     ),
                   ],
                 ),
@@ -65,19 +124,19 @@ class ViewOrderPage extends StatelessWidget {
                 // Info rows
                 InfoRow(
                   label: 'Organization ID',
-                  value: order.organizationId.substring(0, 8),
+                  value: widget.order.organizationId.substring(0, 8),
                 ),
                 InfoRow(
                   label: 'Created By',
-                  value: order.createdById.substring(0, 8),
+                  value: widget.order.createdById.substring(0, 8),
                 ),
                 InfoRow(
                   label: 'Rider ID',
-                  value: order.riderId ?? 'Not assigned',
+                  value: widget.order.riderId ?? 'Not assigned',
                 ),
                 InfoRow(
                   label: 'Rider Session ID',
-                  value: order.riderSessionId ?? 'N/A',
+                  value: widget.order.riderSessionId ?? 'N/A',
                 ),
 
                 const Divider(height: 32),
@@ -93,12 +152,12 @@ class ViewOrderPage extends StatelessWidget {
                 const SizedBox(height: 8),
                 LocationCard(
                   title: 'Pickup Location',
-                  location: order.pickUpLocation,
+                  location: widget.order.pickUpLocation,
                 ),
                 const SizedBox(height: 8),
                 LocationCard(
                   title: 'Drop-off Location',
-                  location: order.dropOffLocation,
+                  location: widget.order.dropOffLocation,
                 ),
 
                 const Divider(height: 32),
@@ -112,18 +171,21 @@ class ViewOrderPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
-                Text(order.orderDetails, style: theme.textTheme.bodyMedium),
+                Text(
+                  widget.order.orderDetails,
+                  style: theme.textTheme.bodyMedium,
+                ),
 
                 const Divider(height: 32),
 
                 // Date info
                 InfoRow(
                   label: 'Created At',
-                  value: formatDate(order.createdAt),
+                  value: formatDate(widget.order.createdAt),
                 ),
                 InfoRow(
                   label: 'Updated At',
-                  value: formatDate(order.updatedAt),
+                  value: formatDate(widget.order.updatedAt),
                 ),
                 const SizedBox(height: 80),
               ],
@@ -150,7 +212,68 @@ class ViewOrderPage extends StatelessWidget {
                     elevation: 4,
                   ),
                   onPressed: () {
-                    // TODO: Handle dispatch logic
+                    showModalBottomSheet(
+                      context: context,
+                      backgroundColor: Theme.of(context).colorScheme.surface,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(20),
+                        ),
+                      ),
+                      builder: (_) {
+                        return Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Text(
+                                'Dispatch Options',
+                                style: Theme.of(context).textTheme.titleMedium
+                                    ?.copyWith(fontWeight: FontWeight.bold),
+                              ),
+                              const SizedBox(height: 16),
+                              ElevatedButton.icon(
+                                icon: const Icon(Icons.auto_awesome_outlined),
+                                label: const Text('Auto-Dispatch'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.grey[400],
+                                  foregroundColor: Colors.grey[900],
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 14,
+                                  ),
+                                ),
+                                onPressed: () async {
+                                  await _autoDispatch();
+                                  Navigator.pop(context);
+                                },
+                              ),
+                              const SizedBox(height: 12),
+                              ElevatedButton.icon(
+                                icon: const Icon(Icons.person_search_outlined),
+                                label: const Text('Manual Dispatch'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.grey[300],
+                                  foregroundColor: Colors.grey[900],
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 14,
+                                  ),
+                                ),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  // TODO: Navigate to rider-selection screen
+                                },
+                              ),
+                              const SizedBox(height: 8),
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: const Text('Cancel'),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    );
                   },
                   icon: const Icon(Icons.local_shipping_outlined),
                   label: const Text('Dispatch'),
@@ -169,7 +292,7 @@ class ViewOrderPage extends StatelessWidget {
                     elevation: 4,
                   ),
                   onPressed: () {
-                    // TODO: Handle complete logic
+                    _complete();
                   },
                   icon: const Icon(Icons.check_circle_outline),
                   label: const Text('Complete'),
@@ -188,7 +311,7 @@ class ViewOrderPage extends StatelessWidget {
                     elevation: 4,
                   ),
                   onPressed: () {
-                    // TODO: Handle cancel logic
+                    _cancel();
                   },
                   icon: const Icon(Icons.cancel_outlined),
                   label: const Text('Cancel'),
