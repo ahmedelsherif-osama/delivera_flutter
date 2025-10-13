@@ -1,11 +1,11 @@
 import 'package:delivera_flutter/features/orgadmin_actions/data/orgadmin_repository.dart';
-import 'package:delivera_flutter/features/orgadmin_actions/presentation/create_zone_page.dart';
-import 'package:delivera_flutter/features/orgadmin_actions/presentation/view_zone_page.dart';
+import 'package:delivera_flutter/features/orgadmin_actions/presentation/zone/create_zone_page.dart';
+import 'package:delivera_flutter/features/orgadmin_actions/presentation/zone/view_zone_page.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../logic/zone_model.dart';
+import '../../logic/zone_model.dart';
 
 class ZonesPage extends ConsumerStatefulWidget {
   const ZonesPage({super.key, required this.onBack});

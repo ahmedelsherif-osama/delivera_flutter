@@ -1,5 +1,5 @@
-import 'package:delivera_flutter/features/orgadmin_actions/presentation/orders_page.dart';
-import 'package:delivera_flutter/features/orgadmin_actions/presentation/zones_page.dart';
+import 'package:delivera_flutter/features/orgadmin_actions/presentation/order/orders_page.dart';
+import 'package:delivera_flutter/features/orgadmin_actions/presentation/zone/zones_page.dart';
 import 'package:delivera_flutter/features/superadmin_actions/presentation/organizations_page.dart';
 import 'package:delivera_flutter/features/superadmin_actions/presentation/users_page.dart';
 import 'package:delivera_flutter/features/authentication/logic/auth_provider.dart';

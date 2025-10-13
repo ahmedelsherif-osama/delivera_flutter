@@ -1,6 +1,7 @@
 import 'package:delivera_flutter/features/orgadmin_actions/data/orgadmin_repository.dart';
 import 'package:delivera_flutter/features/orgadmin_actions/logic/order_model.dart';
-import 'package:delivera_flutter/features/orgadmin_actions/presentation/create_order.dart';
+import 'package:delivera_flutter/features/orgadmin_actions/presentation/order/create_order.dart';
+import 'package:delivera_flutter/features/orgadmin_actions/presentation/order/view_order_page.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -134,8 +135,29 @@ class _ViewOrdersState extends ConsumerState<ViewOrders> {
                             .map(
                               (order) => DataRow(
                                 cells: [
-                                  DataCell(Text(order.id.substring(0, 8))),
-                                  DataCell(Text(order.orderDetails)),
+                                  DataCell(
+                                    Text(order.id.substring(0, 8)),
+
+                                    onTap: () {
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              ViewOrderPage(order: order),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                  DataCell(
+                                    Text(order.orderDetails),
+                                    onTap: () {
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              ViewOrderPage(order: order),
+                                        ),
+                                      );
+                                    },
+                                  ),
                                 ],
                               ),
                             )

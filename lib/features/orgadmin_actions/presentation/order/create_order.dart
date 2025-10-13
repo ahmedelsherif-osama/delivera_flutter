@@ -1,6 +1,6 @@
 import 'package:delivera_flutter/features/orgadmin_actions/data/orgadmin_repository.dart';
 import 'package:delivera_flutter/features/orgadmin_actions/logic/order_model.dart';
-import 'package:delivera_flutter/features/orgadmin_actions/presentation/location_page.dart';
+import 'package:delivera_flutter/features/orgadmin_actions/presentation/shared/location_page.dart';
 import 'package:delivera_flutter/features/utils/failures/failure.dart';
 import 'package:delivera_flutter/features/utils/location_service/location_service.dart';
 import 'package:flutter/material.dart';

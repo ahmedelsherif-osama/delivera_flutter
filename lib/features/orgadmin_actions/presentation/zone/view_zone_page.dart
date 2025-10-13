@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import '../logic/zone_model.dart';
+import '../../logic/zone_model.dart';
 
 class ViewZonePage extends StatefulWidget {
   const ViewZonePage({super.key, required this.zone});
