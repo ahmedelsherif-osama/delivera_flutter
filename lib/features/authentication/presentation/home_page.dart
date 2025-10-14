@@ -4,6 +4,7 @@ import 'package:delivera_flutter/features/superadmin_actions/presentation/supera
 import 'package:delivera_flutter/features/authentication/logic/auth_provider.dart';
 import 'package:delivera_flutter/features/authentication/logic/user_model.dart';
 import 'package:delivera_flutter/features/authentication/logic/user_provider.dart';
+import 'package:delivera_flutter/features/support_actions/presentation/home/support_home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -57,7 +58,7 @@ class UserHome extends StatelessWidget {
           case "Rider":
             return Center(child: Text("Rider home"));
           case "Support":
-            return Center(child: Text("Org support home"));
+            return SupportHome();
           case "Admin":
             return OrgadminHome();
           case "Owner":
