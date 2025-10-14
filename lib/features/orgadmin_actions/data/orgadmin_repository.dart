@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:delivera_flutter/features/authentication/logic/auth_provider.dart';
 import 'package:delivera_flutter/features/authentication/logic/user_provider.dart';
 import 'package:delivera_flutter/features/orgadmin_actions/logic/order_model.dart';
+import 'package:delivera_flutter/features/orgadmin_actions/logic/rider_session_model.dart';
 import 'package:delivera_flutter/features/orgadmin_actions/logic/zone_model.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -99,6 +100,21 @@ class OrgadminRepository {
     }
   }
 
+  Future<dynamic> assignRiderManually(String riderId, String orderId) async {
+    try {
+      print("rider $riderId order $orderId");
+      final res = await _dio.patch(
+        '/ridersessions/admin/assignRider/?orderId=${orderId.toUpperCase()}',
+        data: {"riderId": riderId.toUpperCase()},
+      );
+      return res.statusCode == 200;
+    } on DioException catch (e) {
+      return e.response!.data["message"];
+    } catch (e) {
+      return e.toString();
+    }
+  }
+
   Future<dynamic> completeOrder(String orderId) async {
     try {
       print("inside complete repo");
@@ -123,6 +139,19 @@ class OrgadminRepository {
       return res.statusCode == 200;
     } on DioException catch (e) {
       return e.response!.data["message"];
+    } catch (e) {
+      return e.toString();
+    }
+  }
+
+  Future<dynamic> fetchActiveRiderSessions() async {
+    try {
+      final res = await _dio.get('/ridersessions/all');
+      return (res.data as List)
+          .map((jsonSession) => RiderSession.fromJson(jsonSession))
+          .toList();
+    } on DioException catch (e) {
+      return e.toString();
     } catch (e) {
       return e.toString();
     }

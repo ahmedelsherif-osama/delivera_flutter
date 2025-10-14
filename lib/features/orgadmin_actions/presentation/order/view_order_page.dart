@@ -1,5 +1,6 @@
 import 'package:delivera_flutter/features/orgadmin_actions/data/orgadmin_repository.dart';
 import 'package:delivera_flutter/features/orgadmin_actions/logic/order_model.dart';
+import 'package:delivera_flutter/features/orgadmin_actions/presentation/order/select_rider_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -261,7 +262,12 @@ class _ViewOrderPageState extends ConsumerState<ViewOrderPage> {
                                 ),
                                 onPressed: () {
                                   Navigator.pop(context);
-                                  // TODO: Navigate to rider-selection screen
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          SelectRiderPage(order: widget.order),
+                                    ),
+                                  );
                                 },
                               ),
                               const SizedBox(height: 8),
