@@ -1,4 +1,5 @@
 import 'package:delivera_flutter/features/orgadmin_actions/presentation/order/orders_page.dart';
+import 'package:delivera_flutter/features/orgadmin_actions/presentation/rider/riders_page.dart';
 import 'package:delivera_flutter/features/orgadmin_actions/presentation/zone/zones_page.dart';
 import 'package:delivera_flutter/features/superadmin_actions/presentation/organizations_page.dart';
 import 'package:delivera_flutter/features/superadmin_actions/presentation/users_page.dart';
@@ -114,6 +115,19 @@ class _AdminOptionsPageState extends ConsumerState<AdminOptionsPage> {
                 child: Container(
                   child: Text(
                     "Orders",
+                    style: Theme.of(context).textTheme.headlineMedium,
+                  ),
+                ),
+              ),
+              SizedBox(height: 60),
+
+              GestureDetector(
+                onTap: () {
+                  widget.onSelectOption.call(RidersPage());
+                },
+                child: Container(
+                  child: Text(
+                    "Riders",
                     style: Theme.of(context).textTheme.headlineMedium,
                   ),
                 ),

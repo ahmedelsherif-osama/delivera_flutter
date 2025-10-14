@@ -4,6 +4,7 @@ import 'package:delivera_flutter/features/authentication/logic/auth_provider.dar
 import 'package:delivera_flutter/features/authentication/logic/user_provider.dart';
 import 'package:delivera_flutter/features/orgadmin_actions/logic/order_model.dart';
 import 'package:delivera_flutter/features/orgadmin_actions/logic/rider_session_model.dart';
+import 'package:delivera_flutter/features/orgadmin_actions/logic/rider_summary_response.dart';
 import 'package:delivera_flutter/features/orgadmin_actions/logic/zone_model.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -152,6 +153,17 @@ class OrgadminRepository {
           .toList();
     } on DioException catch (e) {
       return e.toString();
+    } catch (e) {
+      return e.toString();
+    }
+  }
+
+  Future<dynamic> fetchAllRiders() async {
+    try {
+      final res = await _dio.get('/ridersessions/admin/riders/');
+      return RiderSummaryResponse.fromJson(res.data);
+    } on DioException catch (e) {
+      return e.message;
     } catch (e) {
       return e.toString();
     }
