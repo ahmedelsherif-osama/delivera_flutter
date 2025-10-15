@@ -168,6 +168,19 @@ class OrgadminRepository {
       return e.toString();
     }
   }
+
+  Future<dynamic> fetchRiderOrders(String riderId) async {
+    try {
+      final res = await _dio.get('/orders/rider/all/${riderId.toUpperCase()}');
+      return (res.data as List)
+          .map((jsonOrder) => Order.fromJson(jsonOrder))
+          .toList();
+    } on DioException catch (e) {
+      return e.message;
+    } catch (e) {
+      return e.toString();
+    }
+  }
 }
 
 final orgAdminRepoProvider = Provider((ref) {
