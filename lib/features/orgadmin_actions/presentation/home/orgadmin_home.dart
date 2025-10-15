@@ -1,8 +1,7 @@
 import 'package:delivera_flutter/features/orgadmin_actions/presentation/order/orders_page.dart';
 import 'package:delivera_flutter/features/orgadmin_actions/presentation/rider/riders_page.dart';
 import 'package:delivera_flutter/features/orgadmin_actions/presentation/zone/zones_page.dart';
-import 'package:delivera_flutter/features/superadmin_actions/presentation/organizations_page.dart';
-import 'package:delivera_flutter/features/superadmin_actions/presentation/users_page.dart';
+
 import 'package:delivera_flutter/features/authentication/logic/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -123,7 +122,7 @@ class _AdminOptionsPageState extends ConsumerState<AdminOptionsPage> {
 
               GestureDetector(
                 onTap: () {
-                  widget.onSelectOption.call(RidersPage());
+                  widget.onSelectOption.call(RidersPage(onBack: widget.onBack));
                 },
                 child: Container(
                   child: Text(
