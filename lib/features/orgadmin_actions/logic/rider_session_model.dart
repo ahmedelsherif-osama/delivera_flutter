@@ -1,3 +1,4 @@
+import 'package:delivera_flutter/features/orgadmin_actions/logic/order_model.dart';
 import 'package:equatable/equatable.dart';
 
 class RiderSession extends Equatable {
@@ -13,6 +14,9 @@ class RiderSession extends Equatable {
   final DateTime? lastUpdated;
   final String? organizationId;
   final List<dynamic> activeOrders;
+  final Location? currentOrderPickUp;
+  final Location? currentOrderDropOff;
+  final String? currentOrderId;
 
   const RiderSession({
     required this.id,
@@ -27,6 +31,9 @@ class RiderSession extends Equatable {
     this.lastUpdated,
     this.organizationId,
     this.activeOrders = const [],
+    this.currentOrderPickUp,
+    this.currentOrderDropOff,
+    this.currentOrderId,
   });
 
   /// 🧩 Empty constructor
@@ -43,6 +50,9 @@ class RiderSession extends Equatable {
     lastUpdated: null,
     organizationId: null,
     activeOrders: const [],
+    currentOrderPickUp: null,
+    currentOrderDropOff: null,
+    currentOrderId: null,
   );
 
   /// 🧱 Create from JSON
@@ -65,6 +75,13 @@ class RiderSession extends Equatable {
     activeOrders: json['activeOrders'] != null
         ? List<dynamic>.from(json['activeOrders'])
         : const [],
+    currentOrderPickUp: json['currentOrderPickUp'] != null
+        ? Location.fromJson(json['currentOrderPickUp'])
+        : null,
+    currentOrderDropOff: json['currentOrderDropOff'] != null
+        ? Location.fromJson(json['currentOrderDropOff'])
+        : null,
+    currentOrderId: json['currentOrderId'] ?? null,
   );
 
   /// 🔁 Convert to JSON
@@ -81,6 +98,9 @@ class RiderSession extends Equatable {
     'lastUpdated': lastUpdated?.toIso8601String(),
     'organizationId': organizationId,
     'activeOrders': activeOrders,
+    'currentOrderPickUp': currentOrderPickUp?.toJson(),
+    'currentOrderDropOff': currentOrderDropOff?.toJson(),
+    'currentOrderId': currentOrderId,
   };
 
   /// 🧩 CopyWith method
@@ -97,6 +117,9 @@ class RiderSession extends Equatable {
     DateTime? lastUpdated,
     String? organizationId,
     List<dynamic>? activeOrders,
+    Location? currentOrderPickUp,
+    Location? currentOrderDropOff,
+    String? currentOrderId,
   }) {
     return RiderSession(
       id: id ?? this.id,
@@ -111,6 +134,9 @@ class RiderSession extends Equatable {
       lastUpdated: lastUpdated ?? this.lastUpdated,
       organizationId: organizationId ?? this.organizationId,
       activeOrders: activeOrders ?? this.activeOrders,
+      currentOrderPickUp: currentOrderPickUp ?? this.currentOrderPickUp,
+      currentOrderDropOff: currentOrderDropOff ?? this.currentOrderDropOff,
+      currentOrderId: currentOrderId ?? this.currentOrderId,
     );
   }
 
@@ -128,5 +154,8 @@ class RiderSession extends Equatable {
     lastUpdated,
     organizationId,
     activeOrders,
+    currentOrderPickUp,
+    currentOrderDropOff,
+    currentOrderId,
   ];
 }
