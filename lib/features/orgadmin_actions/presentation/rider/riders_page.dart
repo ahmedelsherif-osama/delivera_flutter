@@ -1,8 +1,8 @@
 import 'package:accordion/accordion.dart';
-import 'package:accordion/controllers.dart';
 import 'package:delivera_flutter/features/orgadmin_actions/data/orgadmin_repository.dart';
 import 'package:delivera_flutter/features/orgadmin_actions/logic/rider_session_model.dart';
 import 'package:delivera_flutter/features/orgadmin_actions/logic/rider_summary_response.dart';
+import 'package:delivera_flutter/features/orgadmin_actions/presentation/rider/rider_details_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,7 +10,8 @@ import 'package:latlong2/latlong.dart';
 import 'dart:async';
 
 class RidersPage extends ConsumerStatefulWidget {
-  const RidersPage({super.key});
+  const RidersPage({super.key, required this.onBack});
+  final Function onBack;
 
   @override
   ConsumerState<RidersPage> createState() => _RidersPageState();
@@ -87,157 +88,154 @@ class _RidersPageState extends ConsumerState<RidersPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            //
-            // 🧾 Summary Header
-            //
-            Center(
-              child: Text(
-                'Rider Summary',
-                style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        widget.onBack.call();
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              //
+              // 🧾 Summary Header
+              //
+              Center(
+                child: Text(
+                  "Rider Summary",
+                  style: Theme.of(context).textTheme.titleLarge,
                 ),
               ),
-            ),
-            const SizedBox(height: 12),
-            if (_isFetchingRiders) ...[
-              Center(child: CircularProgressIndicator()),
-            ] else if (_error != "") ...[
-              Center(child: Text(_error)),
-            ] else ...[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _StatCard(
-                    label: 'Offline',
-                    value: _offlineRiders!.length,
-                    categoryKey: "offline",
-                    onTap: (categoryKey) {
-                      setState(() {
-                        selectedCategory = categoryKey;
-                      });
-                    },
-                  ),
-                  _StatCard(
-                    label: 'Active',
-                    value: _activeRiderSessions!.length,
-                    categoryKey: "active",
-                    onTap: (categoryKey) {
-                      setState(() {
-                        selectedCategory = categoryKey;
-                      });
-                    },
-                  ),
-                  _StatCard(
-                    label: 'On Break',
-                    value: _onBreakRiderSessions!.length,
-                    categoryKey: "onBreak",
-                    onTap: (categoryKey) {
-                      setState(() {
-                        selectedCategory = categoryKey;
-                      });
-                    },
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-
-              SizedBox(
-                height: 370,
-                child: Accordion(
-                  maxOpenSections: 1, // only one open
-                  headerBackgroundColor: Colors.white70,
-                  headerBorderWidth: 1,
-                  headerBorderColor: Colors.grey.shade200,
-                  headerBorderColorOpened: Colors.grey.shade400,
-                  headerBackgroundColorOpened: Theme.of(
-                    context,
-                  ).scaffoldBackgroundColor,
-                  headerPadding: const EdgeInsets.symmetric(
-                    vertical: 10,
-                    horizontal: 16,
-                  ),
-                  contentBorderColor: Colors.grey.shade200,
-                  contentBackgroundColor: Colors.grey.shade50,
-                  rightIcon: const Icon(Icons.keyboard_arrow_down, size: 22),
-                  openAndCloseAnimation: true,
-                  disableScrolling: true,
+              const SizedBox(height: 12),
+              if (_isFetchingRiders) ...[
+                Center(child: CircularProgressIndicator()),
+              ] else if (_error != "") ...[
+                Center(child: Text(_error)),
+              ] else ...[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    // Active Riders
-                    AccordionSection(
-                      isOpen: selectedCategory == "active",
-                      header: const Text(
-                        'Active Riders',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      // content: use a bounded container with an internal ListView
-                      content: _buildScrollableRiderList(
-                        categoryKey: 'active',
-                        sessions: _activeRiderSessions,
-                        type: "sessions",
-                      ),
+                    _StatCard(
+                      label: 'Offline',
+                      value: _offlineRiders!.length,
+                      categoryKey: "offline",
+                      onTap: (categoryKey) {
+                        setState(() {
+                          selectedCategory = categoryKey;
+                        });
+                      },
                     ),
-
-                    // On Break Riders
-                    AccordionSection(
-                      isOpen: selectedCategory == "onBreak",
-                      header: const Text(
-                        'On Break Riders',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      content: _buildScrollableRiderList(
-                        categoryKey: 'onBreak',
-                        sessions: _onBreakRiderSessions,
-                        type: "sessions",
-                      ),
+                    _StatCard(
+                      label: 'Active',
+                      value: _activeRiderSessions!.length,
+                      categoryKey: "active",
+                      onTap: (categoryKey) {
+                        setState(() {
+                          selectedCategory = categoryKey;
+                        });
+                      },
                     ),
-
-                    // Offline Riders
-                    AccordionSection(
-                      isOpen: selectedCategory == "offline",
-                      header: const Text(
-                        'Offline Riders',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      content: _buildScrollableRiderList(
-                        categoryKey: 'offline',
-
-                        riders: _offlineRiders,
-                        type: "riders",
-                      ),
+                    _StatCard(
+                      label: 'On Break',
+                      value: _onBreakRiderSessions!.length,
+                      categoryKey: "onBreak",
+                      onTap: (categoryKey) {
+                        setState(() {
+                          selectedCategory = categoryKey;
+                        });
+                      },
                     ),
                   ],
                 ),
-              ),
+                const SizedBox(height: 24),
 
-              const SizedBox(height: 24),
+                SizedBox(
+                  height: 370,
+                  child: Accordion(
+                    maxOpenSections: 1, // only one open
+                    headerBackgroundColor: Colors.white70,
+                    headerBorderWidth: 1,
+                    headerBorderColor: Colors.grey.shade200,
+                    headerBorderColorOpened: Colors.grey.shade400,
+                    headerBackgroundColorOpened: Theme.of(
+                      context,
+                    ).scaffoldBackgroundColor,
+                    headerPadding: const EdgeInsets.symmetric(
+                      vertical: 10,
+                      horizontal: 16,
+                    ),
+                    contentBorderColor: Colors.grey.shade200,
+                    contentBackgroundColor: Colors.grey.shade50,
+                    rightIcon: const Icon(Icons.keyboard_arrow_down, size: 22),
+                    openAndCloseAnimation: true,
+                    disableScrolling: true,
+                    children: [
+                      // Active Riders
+                      AccordionSection(
+                        isOpen: selectedCategory == "active",
+                        header: const Text(
+                          'Active Riders',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        // content: use a bounded container with an internal ListView
+                        content: _buildScrollableRiderList(
+                          categoryKey: 'active',
+                          sessions: _activeRiderSessions,
+                          type: "sessions",
+                        ),
+                      ),
 
-              //
-              // 👤 Rider Detail Section
-              //
-              if (selectedRider != null)
-                AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 300),
-                  child: isActiveRider
-                      ? _ActiveRiderDetails(riderName: selectedRider!)
-                      : _InactiveRiderDetails(riderName: selectedRider!),
+                      // On Break Riders
+                      AccordionSection(
+                        isOpen: selectedCategory == "onBreak",
+                        header: const Text(
+                          'On Break Riders',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        content: _buildScrollableRiderList(
+                          categoryKey: 'onBreak',
+                          sessions: _onBreakRiderSessions,
+                          type: "sessions",
+                        ),
+                      ),
+
+                      // Offline Riders
+                      AccordionSection(
+                        isOpen: selectedCategory == "offline",
+                        header: const Text(
+                          'Offline Riders',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        content: _buildScrollableRiderList(
+                          categoryKey: 'offline',
+
+                          riders: _offlineRiders,
+                          type: "riders",
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
+
+                const SizedBox(height: 24),
+
+                //
+                // 👤 Rider Detail Section
+                //
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );
@@ -291,7 +289,15 @@ class _RidersPageState extends ConsumerState<RidersPage> {
             contentPadding: const EdgeInsets.symmetric(horizontal: 12),
             title: Text(riderName),
             leading: Icon(leadingIcon, color: iconColor),
-            onTap: () => _onRiderSelect(categoryKey, riderName),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => RiderDetailPage(
+                  category: categoryKey,
+                  rider: rider is RiderUser ? rider : null,
+                  riderSession: rider is RiderSession ? rider : null,
+                ),
+              ),
+            ),
             tileColor: isSelected ? iconColor!.withOpacity(0.08) : null,
             trailing: isSelected
                 ? const Icon(Icons.check_circle, color: Colors.black54)
@@ -358,137 +364,7 @@ class _StatCard extends StatelessWidget {
 //
 // 🔹 Active Rider Detail Section — uses flutter_map
 //
-class _ActiveRiderDetails extends StatelessWidget {
-  final String riderName;
-  const _ActiveRiderDetails({required this.riderName});
-
-  @override
-  Widget build(BuildContext context) {
-    final riderLocation = LatLng(37.7749, -122.4194);
-    final pickupLocation = LatLng(37.7849, -122.4094);
-    final dropoffLocation = LatLng(37.7649, -122.4294);
-
-    final markers = [
-      Marker(
-        point: riderLocation,
-        width: 40,
-        height: 40,
-        child: const Icon(
-          Icons.person_pin_circle,
-          color: Colors.green,
-          size: 32,
-        ),
-      ),
-      Marker(
-        point: pickupLocation,
-        width: 40,
-        height: 40,
-        child: const Icon(Icons.storefront, color: Colors.blue, size: 30),
-      ),
-      Marker(
-        point: dropoffLocation,
-        width: 40,
-        height: 40,
-        child: const Icon(Icons.flag, color: Colors.red, size: 30),
-      ),
-    ];
-
-    return Card(
-      elevation: 3,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              riderName,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            const Text('Active Orders: #A123, #B456'),
-            const SizedBox(height: 8),
-            const Text('Current Order Status: En Route'),
-            const SizedBox(height: 16),
-            SizedBox(
-              height: 220,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: FlutterMap(
-                  options: MapOptions(
-                    initialCenter: riderLocation,
-                    initialZoom: 13,
-                  ),
-                  children: [
-                    TileLayer(
-                      urlTemplate:
-                          'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                      userAgentPackageName: 'com.example.app',
-                    ),
-                    MarkerLayer(markers: markers),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
 
 //
 // 🔹 Inactive Rider Detail Section
 //
-class _InactiveRiderDetails extends StatelessWidget {
-  final String riderName;
-  const _InactiveRiderDetails({required this.riderName});
-
-  @override
-  Widget build(BuildContext context) {
-    final mockHistory = {
-      'Oct 2025': [
-        {'orderId': 'X001', 'status': 'Delivered'},
-        {'orderId': 'X002', 'status': 'Canceled'},
-      ],
-      'Sep 2025': [
-        {'orderId': 'W889', 'status': 'Delivered'},
-        {'orderId': 'W890', 'status': 'Delivered'},
-      ],
-    };
-
-    return Card(
-      elevation: 3,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              riderName,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 12),
-            ...mockHistory.entries.map(
-              (entry) => ExpansionTile(
-                title: Text(
-                  entry.key,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-                children: entry.value
-                    .map(
-                      (order) => ListTile(
-                        title: Text('Order ${order['orderId']}'),
-                        trailing: Chip(label: Text(order['status']!)),
-                      ),
-                    )
-                    .toList(),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
