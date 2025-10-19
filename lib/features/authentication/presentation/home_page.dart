@@ -1,5 +1,6 @@
 import 'package:delivera_flutter/features/orgadmin_actions/presentation/home/orgadmin_home.dart';
 import 'package:delivera_flutter/features/orgowner_actions/presentation/orgowner_home.dart';
+import 'package:delivera_flutter/features/rider_actions/presentation/home/rider_home.dart';
 import 'package:delivera_flutter/features/superadmin_actions/presentation/superadmin_home.dart';
 import 'package:delivera_flutter/features/authentication/logic/auth_provider.dart';
 import 'package:delivera_flutter/features/authentication/logic/user_model.dart';
@@ -56,7 +57,7 @@ class UserHome extends StatelessWidget {
       case "OrgUser":
         switch (user.organizationRole) {
           case "Rider":
-            return Center(child: Text("Rider home"));
+            return RiderHome();
           case "Support":
             return SupportHome();
           case "Admin":
@@ -64,10 +65,10 @@ class UserHome extends StatelessWidget {
           case "Owner":
             return OrgownerHome();
           default:
-            return Center(child: Text("Error"));
+            return Center(child: Text("Home Error"));
         }
       default:
-        return Center(child: Text("Error"));
+        return Center(child: Text("Home Error"));
     }
   }
 }
