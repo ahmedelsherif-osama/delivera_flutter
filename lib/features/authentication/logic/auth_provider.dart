@@ -4,6 +4,7 @@ import 'package:delivera_flutter/features/authentication/services/auth_intercept
 import 'package:delivera_flutter/features/authentication/data/auth_repository.dart';
 import 'package:delivera_flutter/features/authentication/data/token_storage.dart';
 import 'package:delivera_flutter/features/authentication/services/token_refresh_service.dart';
+import 'package:delivera_flutter/features/rider_actions/services/location_update_service.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -72,6 +73,14 @@ class AuthNotifier extends Notifier<AsyncValue<bool>> {
       print("user fetched on login $user");
       await ref.read(userProvider.notifier).setUser(user);
 
+      print("right before checking role");
+
+      if (user.organizationRole == 'Rider') {
+        print("user is a rider");
+        final service = ref.read(locationUpdateServiceProvider);
+        service.start();
+      }
+
       state = const AsyncValue.data(true);
       refreshService.start();
     } catch (e, st) {
@@ -86,6 +95,8 @@ class AuthNotifier extends Notifier<AsyncValue<bool>> {
     if (refreshToken != null && refreshToken.isNotEmpty) {
       try {
         await repo.logout(refreshToken);
+        final service = ref.read(locationUpdateServiceProvider);
+        service.stop();
       } catch (_) {
         // ignore network errors on logout but still clear local tokens
       }
