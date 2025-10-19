@@ -4,6 +4,7 @@ import 'package:delivera_flutter/features/authentication/services/auth_intercept
 import 'package:delivera_flutter/features/authentication/data/auth_repository.dart';
 import 'package:delivera_flutter/features/authentication/data/token_storage.dart';
 import 'package:delivera_flutter/features/authentication/services/token_refresh_service.dart';
+import 'package:delivera_flutter/features/notifications/services/notifications_service.dart';
 import 'package:delivera_flutter/features/rider_actions/services/location_update_service.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -81,6 +82,9 @@ class AuthNotifier extends Notifier<AsyncValue<bool>> {
         service.start();
       }
 
+      final notificationService = ref.read(notificationServiceProvider);
+      await notificationService.connect(res['accessToken'], user.id);
+
       state = const AsyncValue.data(true);
       refreshService.start();
     } catch (e, st) {
@@ -91,12 +95,15 @@ class AuthNotifier extends Notifier<AsyncValue<bool>> {
   Future<void> logout() async {
     refreshService.stop(); // stop timer first
     final refreshToken = await storage.getRefreshToken();
+    final user = ref.read(userProvider);
+
     print("already saved refresh $refreshToken");
     if (refreshToken != null && refreshToken.isNotEmpty) {
       try {
         await repo.logout(refreshToken);
         final service = ref.read(locationUpdateServiceProvider);
         service.stop();
+        await ref.read(notificationServiceProvider).disconnect(user!.id);
       } catch (_) {
         // ignore network errors on logout but still clear local tokens
       }
