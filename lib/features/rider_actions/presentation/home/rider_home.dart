@@ -146,7 +146,7 @@ class _RiderOptionsPageState extends ConsumerState<RiderOptionsPage> {
                 ),
               ] else ...[
                 SizedBox(
-                  height: 710,
+                  height: 742,
                   child: Expanded(
                     child: ViewOrderPage(
                       order: _currentOrder!,
@@ -156,7 +156,7 @@ class _RiderOptionsPageState extends ConsumerState<RiderOptionsPage> {
                 ),
               ],
 
-              SizedBox(height: 30),
+              SizedBox(height: 0),
               GestureDetector(
                 onTap: () {
                   Navigator.of(context).push(
