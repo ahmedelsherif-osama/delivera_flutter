@@ -1,11 +1,17 @@
 import 'package:delivera_flutter/core/theme/app_theme.dart';
 import 'package:delivera_flutter/features/authentication/presentation/main_layout.dart';
+import 'package:delivera_flutter/features/notifications/services/system_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  final container = ProviderContainer();
+
+  // ✅ Initialize notifications & request permission
+  await container.read(systemNotificationsProvider).initNotifications();
+
   await dotenv.load(fileName: '.env.production');
 
   runApp(const MyApp());
