@@ -1,44 +1,54 @@
+import org.gradle.api.JavaVersion
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+fun Project.flutterProp(key: String, default: String? = null): String? =
+    (findProperty(key) as String?) ?: default
+
 android {
     namespace = "com.example.delivera_flutter"
-    compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+
+    // Read Flutter properties (safe with fallbacks)
+    val compileSdkInt = 35
+    val minSdkInt = flutterProp("flutter.minSdkVersion")?.toIntOrNull() ?: 23
+    val targetSdkInt = flutterProp("flutter.targetSdkVersion")?.toIntOrNull() ?: 34
+    val versionCodeInt = flutterProp("flutter.versionCode")?.toIntOrNull() ?: 1
+    val versionNameStr = flutterProp("flutter.versionName") ?: "1.0"
+
+    compileSdk = compileSdkInt
+
+    defaultConfig {
+        applicationId = "com.example.delivera_flutter"
+        minSdk = minSdkInt
+        targetSdk = targetSdkInt
+        versionCode = versionCodeInt
+        versionName = versionNameStr
+    }
 
     compileOptions {
+        // Java 11 compatibility
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+        isCoreLibraryDesugaringEnabled = true // required by some libs (flutter_local_notifications)
     }
 
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_11.toString()
     }
 
-    defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.delivera_flutter"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
-        versionCode = flutter.versionCode
-        versionName = flutter.versionName
-    }
-
     buildTypes {
-        release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
+        getByName("release") {
             signingConfig = signingConfigs.getByName("debug")
+            // Configure proguard or shrink if needed
         }
     }
 }
 
-flutter {
-    source = "../.."
+dependencies {
+    // Required for desugaring (enable in compileOptions above)
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
 }
