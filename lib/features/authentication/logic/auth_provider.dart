@@ -88,7 +88,10 @@ class AuthNotifier extends Notifier<AsyncValue<bool>> {
       state = const AsyncValue.data(true);
       refreshService.start();
     } catch (e, st) {
-      state = AsyncValue.error(e, st);
+      final message = (e as DioException).response!.statusCode == 401
+          ? "Wrong username or password"
+          : e;
+      state = AsyncValue.error(message, st);
     }
   }
 
