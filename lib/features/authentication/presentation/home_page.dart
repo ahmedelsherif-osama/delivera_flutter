@@ -39,7 +39,9 @@ class _HomePageState extends ConsumerState<HomePage> {
 
     return Padding(
       padding: const EdgeInsets.all(10),
-      child: Column(children: [UserHome(user: user)]),
+      child: Column(
+        children: [Expanded(child: UserHome(user: user))],
+      ),
     );
   }
 }
