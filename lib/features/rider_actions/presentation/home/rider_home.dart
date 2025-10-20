@@ -1,3 +1,4 @@
+import 'package:delivera_flutter/core/shared_widgets/exit_dialog.dart';
 import 'package:delivera_flutter/features/authentication/logic/auth_provider.dart';
 import 'package:delivera_flutter/features/rider_actions/data/rider_repository.dart';
 import 'package:delivera_flutter/features/rider_actions/logic/order_model.dart';
@@ -38,7 +39,16 @@ class _RiderHomeState extends ConsumerState<RiderHome> {
                 ),
               ),
 
-              SizedBox(
+              PopScope(
+                canPop: false,
+                onPopInvokedWithResult: (didPop, result) {
+                  if (_currentPage == null) {
+                    showDialog(
+                      context: context,
+                      builder: (context) => ExitDialog(),
+                    );
+                  }
+                },
                 child: Column(
                   children: [
                     _currentPage ??

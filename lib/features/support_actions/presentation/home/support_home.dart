@@ -1,3 +1,4 @@
+import 'package:delivera_flutter/core/shared_widgets/exit_dialog.dart';
 import 'package:delivera_flutter/features/support_actions/presentation/order/orders_page.dart';
 
 import 'package:delivera_flutter/features/authentication/logic/auth_provider.dart';
@@ -31,22 +32,33 @@ class _SupportHomeState extends State<SupportHome> {
               child: SvgPicture.asset("assets/delivera_logo.svg", height: 100),
             ),
 
-            Column(
-              children: [
-                _currentPage ??
-                    SupportOptionsPage(
-                      onBack: () {
-                        setState(() {
-                          _currentPage = null;
-                        });
-                      },
-                      onSelectOption: (page) {
-                        setState(() {
-                          _currentPage = page;
-                        });
-                      },
-                    ),
-              ],
+            PopScope(
+              canPop: false,
+              onPopInvokedWithResult: (didPop, result) {
+                if (_currentPage == null) {
+                  showDialog(
+                    context: context,
+                    builder: (context) => ExitDialog(),
+                  );
+                }
+              },
+              child: Column(
+                children: [
+                  _currentPage ??
+                      SupportOptionsPage(
+                        onBack: () {
+                          setState(() {
+                            _currentPage = null;
+                          });
+                        },
+                        onSelectOption: (page) {
+                          setState(() {
+                            _currentPage = page;
+                          });
+                        },
+                      ),
+                ],
+              ),
             ),
           ],
         ),
