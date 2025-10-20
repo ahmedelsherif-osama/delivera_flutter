@@ -9,9 +9,11 @@ class ViewOrderPage extends ConsumerStatefulWidget {
     super.key,
     required this.order,
     required this.omitTitle,
+    required this.onUpdate,
   });
   final Order order;
   final bool omitTitle;
+  final Function onUpdate;
 
   @override
   ConsumerState<ViewOrderPage> createState() => _ViewOrderPageState();
@@ -31,7 +33,8 @@ class _ViewOrderPageState extends ConsumerState<ViewOrderPage> {
     if (result == true) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text("Order completed successfully!")));
+      ).showSnackBar(SnackBar(content: Text("Order picked up successfully!")));
+      widget.onUpdate.call();
     } else {
       ScaffoldMessenger.of(
         context,
@@ -46,6 +49,7 @@ class _ViewOrderPageState extends ConsumerState<ViewOrderPage> {
         .pickupOrder(widget.order.id);
 
     if (result == true) {
+      widget.onUpdate.call();
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text("Order completed successfully!")));
@@ -222,31 +226,32 @@ class _ViewOrderPageState extends ConsumerState<ViewOrderPage> {
                           const SizedBox(width: 12),
                         ],
                       )
-                    : Container(),
-                Row(
-                  children: [
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.grey[350],
-                          foregroundColor: Colors.grey[900],
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                    : Row(
+                        children: [
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: ElevatedButton.icon(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.grey[350],
+                                foregroundColor: Colors.grey[900],
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 14,
+                                ),
+                                elevation: 4,
+                              ),
+                              onPressed: () {
+                                _complete();
+                              },
+                              icon: const Icon(Icons.check_circle_outline),
+                              label: const Text('Complete'),
+                            ),
                           ),
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          elevation: 4,
-                        ),
-                        onPressed: () {
-                          _complete();
-                        },
-                        icon: const Icon(Icons.check_circle_outline),
-                        label: const Text('Complete'),
+                          const SizedBox(width: 12),
+                        ],
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                  ],
-                ),
               ],
             ),
           ),

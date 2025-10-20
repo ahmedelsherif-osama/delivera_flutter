@@ -161,6 +161,9 @@ class _RiderOptionsPageState extends ConsumerState<RiderOptionsPage> {
                     child: ViewOrderPage(
                       order: _currentOrder!,
                       omitTitle: true,
+                      onUpdate: () {
+                        _fetchCurrentOrder();
+                      },
                     ),
                   ),
                 ),
