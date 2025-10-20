@@ -1,16 +1,18 @@
+import 'package:delivera_flutter/features/authentication/logic/auth_provider.dart';
 import 'package:delivera_flutter/features/authentication/presentation/login_page.dart';
 import 'package:delivera_flutter/features/authentication/presentation/registration_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 
-class AuthenticationLayout extends StatefulWidget {
+class AuthenticationLayout extends ConsumerStatefulWidget {
   const AuthenticationLayout({super.key});
-
   @override
-  State<AuthenticationLayout> createState() => _AuthenticationLayoutState();
+  ConsumerState<AuthenticationLayout> createState() =>
+      _AuthenticationLayoutState();
 }
 
-class _AuthenticationLayoutState extends State<AuthenticationLayout> {
+class _AuthenticationLayoutState extends ConsumerState<AuthenticationLayout> {
   bool _haveAnAccount = true;
 
   @override
